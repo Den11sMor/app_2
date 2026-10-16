@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,7 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-// Selección de intereses
+// Pantalla de selección de intereses
 @Composable
 fun InteresesScreen(
     onContinue: () -> Unit
@@ -37,7 +37,7 @@ fun InteresesScreen(
     ) {
 
         Text(
-            text = "Tus intereses",
+            text = "Elige tus intereses",
             style = MaterialTheme.typography.headlineLarge
         )
 
@@ -51,35 +51,55 @@ fun InteresesScreen(
 
         FilterChip(
             selected = cocina,
-            onClick = { cocina = !cocina },
-            label = { Text("Cocina") }
+            onClick = {
+                cocina = !cocina
+            },
+            label = {
+                Text("Cocina")
+            },
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         FilterChip(
             selected = recetas,
-            onClick = { recetas = !recetas },
-            label = { Text("Recetas") }
+            onClick = {
+                recetas = !recetas
+            },
+            label = {
+                Text("Recetas")
+            },
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         FilterChip(
             selected = cocteleria,
-            onClick = { cocteleria = !cocteleria },
-            label = { Text("Coctelería") }
+            onClick = {
+                cocteleria = !cocteleria
+            },
+            label = {
+                Text("Coctelería")
+            },
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         FilterChip(
             selected = gastronomia,
-            onClick = { gastronomia = !gastronomia },
-            label = { Text("Gastronomía") }
+            onClick = {
+                gastronomia = !gastronomia
+            },
+            label = {
+                Text("Gastronomía")
+            },
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         Button(
             onClick = onContinue,
