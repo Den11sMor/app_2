@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 
-// Pantalla de inicio de sesión
+// Pantalla principal de inicio de sesión.
 @Composable
 fun LoginScreen(
     onNavigateToRegistro: () -> Unit,
@@ -53,24 +53,22 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // Campo para ingresar el correo electrónico.
         OutlinedTextField(
             value = correo,
             onValueChange = { correo = it },
-            label = {
-                Text("Correo electrónico")
-            },
+            label = { Text("Correo electrónico") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
 
         Spacer(modifier = Modifier.height(14.dp))
 
+        // Campo para ingresar la contraseña.
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = {
-                Text("Contraseña")
-            },
+            label = { Text("Contraseña") },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
@@ -78,6 +76,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Botón para iniciar sesión.
         Button(
             onClick = onLoginSuccess,
             modifier = Modifier.fillMaxWidth()
@@ -87,6 +86,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        // Botón para ir a la pantalla de registro.
         OutlinedButton(
             onClick = onNavigateToRegistro,
             modifier = Modifier.fillMaxWidth()
