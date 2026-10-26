@@ -1,96 +1,52 @@
 package com.mastermartini.app.ui.screens.detalle
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mastermartini.app.ui.components.*
 
-// Detalle de una receta
 @Composable
-fun DetalleContenidoScreen() {
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-    ) {
-
-        Text(
-            text = "Torta de chocolate",
-            style = MaterialTheme.typography.headlineLarge
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Ingredientes",
-            style = MaterialTheme.typography.titleLarge
-        )
-
-        Text("250 g de harina")
-        Text("200 g de chocolate")
-        Text("150 g de azúcar")
-        Text("3 huevos")
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text(
-            text = "Preparación",
-            style = MaterialTheme.typography.titleLarge
-        )
-
-        Text("1. Mezclar los ingredientes.")
-        Text("2. Agregar el chocolate.")
-        Text("3. Llevar al horno.")
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Temporizador solo visual por ahora
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-
-                Text(
-                    text = "Temporizador",
-                    style = MaterialTheme.typography.titleLarge
-                )
-
-                Text(
-                    text = "15:00",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Button(
-                    onClick = { },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Iniciar temporizador")
+fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = viewModel()) {
+    val estado by vm.estado.collectAsStateWithLifecycle()
+    val segundos by vm.segundos.collectAsStateWithLifecycle()
+    val terminado by vm.terminado.collectAsStateWithLifecycle()
+    val contenido = estado.contenidos.find { it.id == id }
+    AppPage(contenido?.tipo ?: "Detalle", volver) {
+        if (estado.cargando) CircularProgressIndicator()
+        MensajeError(estado.mensaje)
+        if (!estado.cargando && contenido == null) {
+            Text("No se encontró el contenido.")
+            TextButton(onClick = vm::cargar) { Text("Volver a intentar") }
+        }
+        contenido?.let {
+            Text(it.titulo, style = MaterialTheme.typography.headlineLarge)
+            Text("${it.categoria} · ${it.duracion}", style = MaterialTheme.typography.labelLarge)
+            Text(it.descripcion)
+            Text(it.detalle, style = MaterialTheme.typography.bodyLarge)
+            if (it.tipo == "Receta") Card(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Temporizador de práctica", style = MaterialTheme.typography.titleLarge)
+                    Text("15 minutos. Úsalo mientras mantienes esta pantalla abierta; no reemplaza el tiempo de la receta.")
+                    Text("%02d:%02d".format(segundos / 60, segundos % 60),
+                        style = MaterialTheme.typography.headlineMedium)
+                    AnimatedVisibility(terminado) { Text("¡Terminó el tiempo!") }
+                    if (segundos > 0) OutlinedButton(onClick = vm::cancelar) { Text("Cancelar temporizador") }
+                    else Button(onClick = vm::iniciar) { Text("Iniciar 15 minutos") }
                 }
             }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedButton(
-            onClick = { },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Agregar a favoritos")
+            val favorito = it.id in estado.favoritos
+            OutlinedButton(onClick = { vm.cambiarFavorito(it.id) }, enabled = !estado.guardando) {
+                Icon(if (favorito) Icons.Default.Favorite else Icons.Default.FavoriteBorder, null)
+                Spacer(Modifier.width(8.dp))
+                Text(if (favorito) "Quitar de favoritos" else "Agregar a favoritos")
+            }
         }
     }
 }
