@@ -16,6 +16,9 @@ lifecycleViewmodelCompose = "2.11.0"
 
 [libraries]
 
+androidx-compose-material-icons = { group = "androidx.compose.material", name = "material-icons-extended" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
+
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -56,6 +59,8 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 
 
 [plugins]
+
+ksp = { id = "com.google.devtools.ksp", version = "2.3.4" }
 
 android-application = { id = "com.android.application", version.ref = "agp" }
 

@@ -1,89 +1,36 @@
 package com.mastermartini.app.ui.screens.registro
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mastermartini.app.ui.components.*
 
-// Pantalla de registro
 @Composable
-fun RegistroScreen(
-    onRegistroSuccess: () -> Unit,
-    onNavigateToLogin: () -> Unit
-) {
-    var nombre by remember { mutableStateOf("") }
-    var correo by remember { mutableStateOf("") }
-    var telefono by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-
-        Text(
-            text = "Crear cuenta",
-            style = MaterialTheme.typography.headlineLarge
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = nombre,
-            onValueChange = { nombre = it },
-            label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = correo,
-            onValueChange = { correo = it },
-            label = { Text("Correo electrónico") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = telefono,
-            onValueChange = { telefono = it },
-            label = { Text("Teléfono") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(
-            onClick = onRegistroSuccess,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Continuar")
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Button(
-            onClick = onNavigateToLogin,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Volver al inicio de sesión")
-        }
+fun RegistroScreen(onRegistroSuccess: () -> Unit, onNavigateToLogin: () -> Unit,
+                   vm: RegistroViewModel = viewModel()) {
+    val estado by vm.estado.collectAsStateWithLifecycle()
+    LaunchedEffect(estado.exitoso) { if (estado.exitoso) onRegistroSuccess() }
+    AppPage("Crear cuenta", onNavigateToLogin) {
+        Text("Completa tus datos", style = MaterialTheme.typography.headlineMedium)
+        Text("Todos los campos son obligatorios.")
+        AppTextField(estado.nombre, { vm.cambiar("nombre", it) }, "Nombre",
+            estado.errores["nombre"], Icons.Default.Person, habilitado = !estado.cargando)
+        AppTextField(estado.correo, { vm.cambiar("correo", it) }, "Correo electrónico",
+            estado.errores["correo"], Icons.Default.Email, KeyboardType.Email, habilitado = !estado.cargando)
+        AppTextField(estado.telefono, { vm.cambiar("telefono", it) }, "Teléfono",
+            estado.errores["telefono"], Icons.Default.Phone, KeyboardType.Phone, habilitado = !estado.cargando)
+        AppTextField(estado.clave, { vm.cambiar("clave", it) }, "Contraseña",
+            estado.errores["clave"], Icons.Default.Lock, KeyboardType.Password, secreto = true,
+            habilitado = !estado.cargando)
+        Text("Usa al menos 8 caracteres, con letras y números.", style = MaterialTheme.typography.bodySmall)
+        AppTextField(estado.repetida, { vm.cambiar("repetida", it) }, "Repite la contraseña",
+            estado.errores["repetida"], Icons.Default.Lock, KeyboardType.Password, secreto = true,
+            habilitado = !estado.cargando)
+        MensajeError(estado.mensaje)
+        AppButton("Crear cuenta", estado.cargando, accion = vm::registrar)
     }
 }

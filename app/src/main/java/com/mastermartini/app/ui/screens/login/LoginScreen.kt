@@ -1,88 +1,32 @@
 package com.mastermartini.app.ui.screens.login
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mastermartini.app.ui.components.*
 
-// Pantalla de inicio de sesión
 @Composable
-fun LoginScreen(
-    onNavigateToRegistro: () -> Unit,
-    onLoginSuccess: () -> Unit
-) {
-    var correo by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-
-        Text(
-            text = "Master Martini",
-            style = MaterialTheme.typography.headlineLarge
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Inicia sesión para continuar"
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        OutlinedTextField(
-            value = correo,
-            onValueChange = { correo = it },
-            label = { Text("Correo electrónico") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(
-            onClick = onLoginSuccess,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Iniciar sesión")
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        OutlinedButton(
-            onClick = onNavigateToRegistro,
-            modifier = Modifier.fillMaxWidth()
-        ) {
+fun LoginScreen(onNavigateToRegistro: () -> Unit, onLoginSuccess: () -> Unit,
+                vm: LoginViewModel = viewModel()) {
+    val estado by vm.estado.collectAsStateWithLifecycle()
+    LaunchedEffect(estado.exitoso) { if (estado.exitoso) onLoginSuccess() }
+    AppPage("Master Martini") {
+        Text("Inicia sesión para continuar", style = MaterialTheme.typography.headlineMedium)
+        Text("Tus recetas, cursos e ideas de cocina en un solo lugar.")
+        AppTextField(estado.correo, vm::correo, "Correo electrónico", estado.errorCorreo,
+            Icons.Default.Email, KeyboardType.Email, habilitado = !estado.cargando)
+        AppTextField(estado.clave, vm::clave, "Contraseña", estado.errorClave,
+            Icons.Default.Lock, KeyboardType.Password, secreto = true, habilitado = !estado.cargando)
+        MensajeError(estado.mensaje)
+        AppButton("Iniciar sesión", estado.cargando, accion = vm::ingresar)
+        OutlinedButton(onClick = onNavigateToRegistro, enabled = !estado.cargando) {
             Text("Crear una cuenta")
         }
+        Text("Las cuentas de este proyecto se guardan solo en este dispositivo.",
+            style = MaterialTheme.typography.bodySmall)
     }
 }
