@@ -1,29 +1,20 @@
 package com.mastermartini.app.data.local.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.mastermartini.app.data.local.entity.UsuarioEntity
 import kotlinx.coroutines.flow.Flow
 
-// Defeine las operaciones disponibles para los usuarios
 @Dao
 interface UsuarioDao {
-
-    // Guarda un usario y devuelve su identificador
-    @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insertar(usuario: UsuarioEntity): Long
-
-    // Busca un usuario por el correo electronico
+    @Insert suspend fun insertar(usuario: UsuarioEntity): Long
     @Query("SELECT * FROM usuarios WHERE correo = :correo LIMIT 1")
-    suspend fun obtenerPorCorreo(correo: String): UsuarioEntity?
-
-    //Observa todos los usuarios por su identificador
-    @Query("SELECT * FROM usuarios ORDER BY nombre ASC")
-    fun obtenerTodos(): Flow<List<UsuarioEntity>>
-
-    // Elimina un usuario en especifico por su identificador
-    @Query("DELETE FROM usuarios WHERE id = :id")
-    suspend fun eliminarPorId(id: Int)
+    suspend fun buscarPorCorreo(correo: String): UsuarioEntity?
+    @Query("SELECT * FROM usuarios WHERE id = :id")
+    fun observar(id: Long): Flow<UsuarioEntity?>
+    @Query("UPDATE usuarios SET nombre = :nombre, telefono = :telefono WHERE id = :id")
+    suspend fun actualizarPerfil(id: Long, nombre: String, telefono: String)
+    @Query("UPDATE usuarios SET intereses = :intereses WHERE id = :id")
+    suspend fun actualizarIntereses(id: Long, intereses: String)
+    @Query("UPDATE usuarios SET foto = :foto WHERE id = :id")
+    suspend fun actualizarFoto(id: Long, foto: String)
 }

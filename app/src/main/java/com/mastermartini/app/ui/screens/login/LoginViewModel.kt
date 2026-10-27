@@ -1,112 +1,43 @@
 package com.mastermartini.app.ui.screens.login
 
-import android.util.Patterns
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import android.app.Application
 import androidx.lifecycle.viewModelScope
-import com.mastermartini.app.data.repository.UsuarioRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.mastermartini.app.ui.viewmodels.BaseViewModel
+import com.mastermartini.app.utils.Validaciones
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-// Estado de la interfaz para el inicio de sesión.
 data class LoginUiState(
-    val correo: String = "",
-    val password: String = "",
-    val errorCorreo: String? = null,
-    val errorPassword: String? = null,
-    val mensaje: String? = null,
-    val cargando: Boolean = false,
-    val loginExitoso: Boolean = false
+    val correo: String = "", val clave: String = "",
+    val errorCorreo: String? = null, val errorClave: String? = null,
+    val mensaje: String? = null, val cargando: Boolean = false, val exitoso: Boolean = false
 )
 
-// Fábrica para crear LoginViewModel con el repositorio.
-class LoginViewModelFactory(
-    private val repository: UsuarioRepository
-) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
-            return LoginViewModel(repository) as T
-        }
-        throw IllegalArgumentException("ViewModel no válido")
-    }
-}
+class LoginViewModel(application: Application) : BaseViewModel(application) {
+    private val _estado = MutableStateFlow(LoginUiState())
+    val estado = _estado.asStateFlow()
 
-// Administra la lógica del inicio de sesión.
-class LoginViewModel(
-    private val usuarioRepository: UsuarioRepository
-) : ViewModel() {
+    fun correo(valor: String) { _estado.update { it.copy(correo = valor, errorCorreo = null, mensaje = null) } }
+    fun clave(valor: String) { _estado.update { it.copy(clave = valor, errorClave = null, mensaje = null) } }
 
-    private val _uiState = MutableStateFlow(LoginUiState())
-    val uiState = _uiState.asStateFlow()
-
-    // Actualiza el valor del correo.
-    fun onCorreoChange(valor: String) {
-        _uiState.value = _uiState.value.copy(
-            correo = valor,
-            errorCorreo = null,
-            mensaje = null
-        )
-    }
-
-    // Actualiza el valor de la contraseña.
-    fun onPasswordChange(valor: String) {
-        _uiState.value = _uiState.value.copy(
-            password = valor,
-            errorPassword = null,
-            mensaje = null
-        )
-    }
-
-    // Valida que el formulario esté completo y correcto.
-    fun validarFormulario(): Boolean {
-        val datos = _uiState.value
-
-        val errorCorreo = when {
-            datos.correo.isBlank() -> "Ingresa tu correo"
-            !Patterns.EMAIL_ADDRESS.matcher(datos.correo.trim()).matches() -> "Ingresa un correo válido"
-            else -> null
-        }
-
-        val errorPassword = if (datos.password.isBlank()) {
-            "Ingresa tu contraseña"
-        } else null
-
-        _uiState.value = datos.copy(
-            errorCorreo = errorCorreo,
-            errorPassword = errorPassword
-        )
-
-        return errorCorreo == null && errorPassword == null
-    }
-
-    // Consulta si el usuario existe en la base de datos.
-    fun iniciarSesion() {
-        if (!validarFormulario()) return
-
+    fun ingresar() {
+        val actual = _estado.value
+        if (actual.cargando) return
+        val emailError = Validaciones.correo(actual.correo)
+        val claveError = if (actual.clave.isBlank()) "Ingresa tu contraseña" else null
+        _estado.update { it.copy(errorCorreo = emailError, errorClave = claveError, mensaje = null) }
+        if (emailError != null || claveError != null) return
+        _estado.update { it.copy(cargando = true) }
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(cargando = true)
-
             try {
-                val usuario = usuarioRepository.obtenerPorCorreo(
-                    _uiState.value.correo.trim().lowercase()
-                )
-
-                _uiState.value = _uiState.value.copy(
-                    cargando = false,
-                    loginExitoso = usuario != null,
-                    mensaje = if (usuario != null) {
-                        "Usuario encontrado"
-                    } else {
-                        "No existe una cuenta con ese correo"
-                    }
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    cargando = false,
-                    mensaje = "No se pudo comprobar la cuenta"
-                )
+                val correcto = app.usuarios.ingresar(actual.correo, actual.clave)
+                _estado.update { it.copy(cargando = false, exitoso = correcto,
+                    clave = if (correcto) "" else it.clave,
+                    mensaje = if (correcto) null else "Correo o contraseña incorrectos") }
+            } catch (e: CancellationException) { throw e
+            } catch (_: Exception) {
+                _estado.update { it.copy(cargando = false, mensaje = "No se pudo iniciar sesión. Intenta nuevamente.") }
             }
         }
     }

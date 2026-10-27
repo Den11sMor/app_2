@@ -1,14 +1,16 @@
 package com.mastermartini.app.ui.navigation
 
-import androidx.compose.runtime.Composable
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.*
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
+import androidx.navigation.compose.*
+import androidx.navigation.navArgument
 import com.mastermartini.app.ui.screens.login.LoginScreen
 import com.mastermartini.app.ui.screens.registro.RegistroScreen
 import com.mastermartini.app.ui.screens.intereses.InteresesScreen
-import com.mastermartini.app.ui.screens.home.HomeScreen
+import com.mastermartini.app.ui.screens.home.*
 import com.mastermartini.app.ui.screens.recetas.RecetasScreen
 import com.mastermartini.app.ui.screens.detalle.DetalleContenidoScreen
 import com.mastermartini.app.ui.screens.videos.VideosScreen
@@ -16,121 +18,73 @@ import com.mastermartini.app.ui.screens.cursos.CursosScreen
 import com.mastermartini.app.ui.screens.favoritos.FavoritosScreen
 import com.mastermartini.app.ui.screens.perfil.PerfilScreen
 
-// Rutas de la aplicación
 object Routes {
     const val LOGIN = "login"
     const val REGISTRO = "registro"
     const val INTERESES = "intereses"
+    const val EDITAR_INTERESES = "editar_intereses"
     const val HOME = "home"
     const val RECETAS = "recetas"
-    const val DETALLE = "detalle"
+    const val DETALLE = "detalle/{id}"
     const val VIDEOS = "videos"
     const val CURSOS = "cursos"
     const val FAVORITOS = "favoritos"
     const val PERFIL = "perfil"
 }
 
-// Controla la navegación entre pantallas
 @Composable
-fun AppNavigation() {
-
-    val navController = rememberNavController()
-
+fun AppNavigation(vm: HomeViewModel = viewModel()) {
+    val nav = rememberNavController()
+    val inicio = remember { if (vm.idInicial == 0L) Routes.LOGIN else Routes.HOME }
+    val volver: () -> Unit = { nav.popBackStack(); Unit }
+    val abrir: (Int) -> Unit = { id -> nav.navigate("detalle/$id") }
+    fun irAlInicio() {
+        nav.navigate(Routes.HOME) {
+            popUpTo(nav.graph.id) { inclusive = true }
+            launchSingleTop = true
+        }
+    }
     NavHost(
-        navController = navController,
-        startDestination = Routes.LOGIN
+        navController = nav, startDestination = inicio,
+        enterTransition = { fadeIn(tween(200)) + slideInHorizontally(tween(200)) { it / 12 } },
+        exitTransition = { fadeOut(tween(150)) },
+        popEnterTransition = { fadeIn(tween(200)) },
+        popExitTransition = { fadeOut(tween(150)) }
     ) {
-
-        // Login
         composable(Routes.LOGIN) {
-            LoginScreen(
-                onNavigateToRegistro = {
-                    navController.navigate(Routes.REGISTRO)
-                },
-                onLoginSuccess = {
-                    navController.navigate(Routes.HOME) {
-                        popUpTo(Routes.LOGIN) {
-                            inclusive = true
-                        }
-                    }
-                }
-            )
+            LoginScreen({ nav.navigate(Routes.REGISTRO) }, { irAlInicio() })
         }
-
-        // Registro
         composable(Routes.REGISTRO) {
-            RegistroScreen(
-                onRegistroSuccess = {
-                    navController.navigate(Routes.INTERESES)
-                },
-                onNavigateToLogin = {
-                    navController.popBackStack()
+            RegistroScreen(onRegistroSuccess = {
+                nav.navigate(Routes.INTERESES) {
+                    popUpTo(Routes.LOGIN) { inclusive = true }
                 }
-            )
+            }, onNavigateToLogin = volver)
         }
-
-        // Intereses
-        composable(Routes.INTERESES) {
-            InteresesScreen(
-                onContinue = {
-                    navController.navigate(Routes.HOME)
-                }
-            )
-        }
-
-        // Inicio
+        composable(Routes.INTERESES) { InteresesScreen(onContinue = { irAlInicio() }) }
+        composable(Routes.EDITAR_INTERESES) { InteresesScreen(onContinue = volver, volver = volver) }
         composable(Routes.HOME) {
             HomeScreen(
-                onNavigateToRecetas = {
-                    navController.navigate(Routes.RECETAS)
-                },
-                onNavigateToVideos = {
-                    navController.navigate(Routes.VIDEOS)
-                },
-                onNavigateToCursos = {
-                    navController.navigate(Routes.CURSOS)
-                },
-                onNavigateToFavoritos = {
-                    navController.navigate(Routes.FAVORITOS)
-                },
-                onNavigateToPerfil = {
-                    navController.navigate(Routes.PERFIL)
-                }
+                { nav.navigate(Routes.RECETAS) }, { nav.navigate(Routes.VIDEOS) },
+                { nav.navigate(Routes.CURSOS) }, { nav.navigate(Routes.FAVORITOS) },
+                { nav.navigate(Routes.PERFIL) }
             )
         }
-
-        // Recetas
-        composable(Routes.RECETAS) {
-            RecetasScreen(
-                onNavigateToDetalle = {
-                    navController.navigate(Routes.DETALLE)
-                }
-            )
+        composable(Routes.RECETAS) { RecetasScreen(volver, abrir) }
+        composable(Routes.VIDEOS) { VideosScreen(volver, abrir) }
+        composable(Routes.CURSOS) { CursosScreen(volver, abrir) }
+        composable(Routes.FAVORITOS) { FavoritosScreen(volver, abrir) }
+        composable(Routes.DETALLE, arguments = listOf(navArgument("id") { type = NavType.IntType })) {
+            DetalleContenidoScreen(it.arguments?.getInt("id") ?: 0, volver)
         }
-
-        // Detalle
-        composable(Routes.DETALLE) {
-            DetalleContenidoScreen()
-        }
-
-        // Videos
-        composable(Routes.VIDEOS) {
-            VideosScreen()
-        }
-
-        // Cursos
-        composable(Routes.CURSOS) {
-            CursosScreen()
-        }
-
-        // Favoritos
-        composable(Routes.FAVORITOS) {
-            FavoritosScreen()
-        }
-
-        // Perfil
         composable(Routes.PERFIL) {
-            PerfilScreen()
+            PerfilScreen(volver, { nav.navigate(Routes.EDITAR_INTERESES) }, {
+                vm.cerrarSesion()
+                nav.navigate(Routes.LOGIN) {
+                    popUpTo(nav.graph.id) { inclusive = true }
+                    launchSingleTop = true
+                }
+            })
         }
     }
 }

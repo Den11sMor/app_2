@@ -1,59 +1,73 @@
 package com.mastermartini.app.data.repository
 
+import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
 import com.mastermartini.app.data.local.dao.UsuarioDao
 import com.mastermartini.app.data.local.entity.UsuarioEntity
 import com.mastermartini.app.domain.model.Usuario
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import com.mastermartini.app.utils.ClaveSegura
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
+import java.util.Locale
 
-// Define y ejecuta las operaciones para gestionar usuarios.
-class UsuarioRepository(
-    private val usuarioDao: UsuarioDao
-) {
+class UsuarioRepository(context: Context, private val dao: UsuarioDao) {
+    private val preferencias = context.getSharedPreferences("sesion", Context.MODE_PRIVATE)
+    private val sesion = MutableStateFlow(preferencias.getLong("usuario_id", 0))
+    val idActual: Long get() = sesion.value
 
-    // Guarda un usuario y devuelve su identificador.
-    suspend fun insertar(usuario: Usuario): Long {
-        return usuarioDao.insertar(usuario.toEntity())
-    }
-
-    // Busca un usuario por su correo electrónico.
-    suspend fun obtenerPorCorreo(correo: String): Usuario? {
-        return usuarioDao.obtenerPorCorreo(correo)?.toDomain()
-    }
-
-    // Obtiene todos los usuarios almacenados.
-    fun obtenerTodos(): Flow<List<Usuario>> {
-        return usuarioDao.obtenerTodos().map { usuarios ->
-            usuarios.map { it.toDomain() }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val usuario: Flow<Usuario?> = sesion.flatMapLatest { id ->
+        if (id == 0L) flowOf(null) else dao.observar(id).map { entidad ->
+            entidad?.let {
+                Usuario(it.id, it.nombre, it.correo, it.telefono,
+                    it.intereses.split("|").filter(String::isNotBlank), it.foto)
+            }
         }
     }
 
-    // Elimina un usuario por su identificador.
-    suspend fun eliminarPorId(id: Int) {
-        usuarioDao.eliminarPorId(id)
+    suspend fun registrar(nombre: String, correo: String, telefono: String, clave: String): String? =
+        withContext(Dispatchers.IO) {
+            val email = correo.trim().lowercase(Locale.ROOT)
+            if (dao.buscarPorCorreo(email) != null) return@withContext "Ese correo ya está registrado"
+            val sal = ClaveSegura.crearSal()
+            try {
+                val id = dao.insertar(UsuarioEntity(
+                    nombre = nombre.trim(), correo = email, telefono = telefono.trim(),
+                    claveHash = ClaveSegura.hash(clave, sal), sal = sal
+                ))
+                guardarSesion(id)
+                null
+            } catch (_: SQLiteConstraintException) {
+                "Ese correo ya está registrado"
+            }
+        }
+
+    suspend fun ingresar(correo: String, clave: String): Boolean = withContext(Dispatchers.IO) {
+        val usuario = dao.buscarPorCorreo(correo.trim().lowercase(Locale.ROOT))
+        if (usuario != null && ClaveSegura.verificar(clave, usuario.sal, usuario.claveHash)) {
+            guardarSesion(usuario.id)
+            true
+        } else false
     }
-}
 
-// Convierte el modelo de dominio en una entidad Room.
-private fun Usuario.toEntity(): UsuarioEntity {
-    return UsuarioEntity(
-        id = id,
-        nombre = nombre,
-        correo = correo,
-        telefono = telefono,
-        tipoNegocio = tipoNegocio,
-        tamanoNegocio = tamanoNegocio
-    )
-}
+    suspend fun guardarPerfil(nombre: String, telefono: String) {
+        check(idActual != 0L)
+        dao.actualizarPerfil(idActual, nombre.trim(), telefono.trim())
+    }
+    suspend fun guardarIntereses(intereses: Set<String>) {
+        check(idActual != 0L)
+        dao.actualizarIntereses(idActual, intereses.sorted().joinToString("|"))
+    }
+    suspend fun guardarFoto(ruta: String) {
+        check(idActual != 0L)
+        dao.actualizarFoto(idActual, ruta)
+    }
+    fun cerrarSesion() = guardarSesion(0)
 
-// Convierte una entidad Room en el modelo de dominio.
-private fun UsuarioEntity.toDomain(): Usuario {
-    return Usuario(
-        id = id,
-        nombre = nombre,
-        correo = correo,
-        telefono = telefono,
-        tipoNegocio = tipoNegocio,
-        tamanoNegocio = tamanoNegocio
-    )
+    private fun guardarSesion(id: Long) {
+        preferencias.edit().putLong("usuario_id", id).apply()
+        sesion.value = id
+    }
 }
