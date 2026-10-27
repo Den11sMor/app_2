@@ -12,11 +12,13 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
+// Repositorio para gestionar el registro, inicio de sesión y perfil de usuarios.
 class UsuarioRepository(context: Context, private val dao: UsuarioDao) {
     private val preferencias = context.getSharedPreferences("sesion", Context.MODE_PRIVATE)
     private val sesion = MutableStateFlow(preferencias.getLong("usuario_id", 0))
     val idActual: Long get() = sesion.value
 
+    // Flujo que observa los cambios del usuario actualmente logueado.
     @OptIn(ExperimentalCoroutinesApi::class)
     val usuario: Flow<Usuario?> = sesion.flatMapLatest { id ->
         if (id == 0L) flowOf(null) else dao.observar(id).map { entidad ->
@@ -27,6 +29,7 @@ class UsuarioRepository(context: Context, private val dao: UsuarioDao) {
         }
     }
 
+    // Registra un nuevo usuario con clave hasheada.
     suspend fun registrar(nombre: String, correo: String, telefono: String, clave: String): String? =
         withContext(Dispatchers.IO) {
             val email = correo.trim().lowercase(Locale.ROOT)
@@ -44,6 +47,7 @@ class UsuarioRepository(context: Context, private val dao: UsuarioDao) {
             }
         }
 
+    // Valida las credenciales de inicio de sesión.
     suspend fun ingresar(correo: String, clave: String): Boolean = withContext(Dispatchers.IO) {
         val usuario = dao.buscarPorCorreo(correo.trim().lowercase(Locale.ROOT))
         if (usuario != null && ClaveSegura.verificar(clave, usuario.sal, usuario.claveHash)) {
@@ -52,20 +56,28 @@ class UsuarioRepository(context: Context, private val dao: UsuarioDao) {
         } else false
     }
 
-    suspend fun guardarPerfil(nombre: String, telefono: String) {
+    // Actualiza el nombre y teléfono del perfil en segundo plano.
+    suspend fun guardarPerfil(nombre: String, telefono: String) = withContext(Dispatchers.IO) {
         check(idActual != 0L)
         dao.actualizarPerfil(idActual, nombre.trim(), telefono.trim())
     }
-    suspend fun guardarIntereses(intereses: Set<String>) {
+
+    // Actualiza los intereses seleccionados en segundo plano.
+    suspend fun guardarIntereses(intereses: Set<String>) = withContext(Dispatchers.IO) {
         check(idActual != 0L)
         dao.actualizarIntereses(idActual, intereses.sorted().joinToString("|"))
     }
-    suspend fun guardarFoto(ruta: String) {
+
+    // Guarda la ruta de la foto de perfil en segundo plano.
+    suspend fun guardarFoto(ruta: String) = withContext(Dispatchers.IO) {
         check(idActual != 0L)
         dao.actualizarFoto(idActual, ruta)
     }
+
+    // Cierra la sesión activa.
     fun cerrarSesion() = guardarSesion(0)
 
+    // Guarda el ID del usuario en SharedPreferences.
     private fun guardarSesion(id: Long) {
         preferencias.edit().putLong("usuario_id", id).apply()
         sesion.value = id

@@ -3,23 +3,37 @@ package com.mastermartini.app.data.repository
 import com.mastermartini.app.data.local.dao.ContenidoDao
 import com.mastermartini.app.data.local.entity.ContenidoEntity
 import com.mastermartini.app.domain.model.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.withContext
 
+// Repositorio para consultar e insertar el catálogo de recetas, videos y cursos.
 class ContenidoRepository(private val dao: ContenidoDao) {
-    val contenidos = dao.observarTodos().onStart { dao.insertarTodos(ejemplos) }.map { filas ->
-        filas.map { fila ->
-            with(fila) {
-                when (tipo) {
-                    "Receta" -> Receta(id, titulo, categoria, duracion, descripcion, detalle)
-                    "Video" -> Video(id, titulo, categoria, duracion, descripcion, detalle)
-                    else -> Curso(id, titulo, categoria, duracion, descripcion, detalle)
+
+    // Observa el catálogo completo y ejecuta la inserción inicial en segundo plano.
+    val contenidos = dao.observarTodos()
+        .onStart {
+            // Se ejecuta la inserción inicial dentro del hilo de E/S (Dispatchers.IO) para evitar cierres en el hilo principal.
+            withContext(Dispatchers.IO) {
+                dao.insertarTodos(ejemplos)
+            }
+        }
+        .map { filas ->
+            filas.map { fila ->
+                with(fila) {
+                    when (tipo) {
+                        "Receta" -> Receta(id, titulo, categoria, duracion, descripcion, detalle)
+                        "Video" -> Video(id, titulo, categoria, duracion, descripcion, detalle)
+                        else -> Curso(id, titulo, categoria, duracion, descripcion, detalle)
+                    }
                 }
             }
         }
-    }
+        .flowOn(Dispatchers.IO)
 
-    // Catálogo educativo local; conserva los contenidos de las primeras pantallas.
+    // Catálogo educativo local de la aplicación.
     private val ejemplos = listOf(
         ContenidoEntity(1, "Torta de chocolate", "Receta", "Pastelería", "45 minutos",
             "Una preparación para compartir y practicar mezclas básicas.",
