@@ -5,6 +5,7 @@ object Validaciones {
     fun nombre(valor: String): String? = when {
         valor.trim().length < 3 -> "Ingresa al menos 3 caracteres"
         valor.trim().length > 60 -> "Usa hasta 60 caracteres"
+
         else -> null
     }
 
