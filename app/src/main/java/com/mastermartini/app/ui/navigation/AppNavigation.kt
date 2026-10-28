@@ -73,7 +73,15 @@ fun AppNavigation(vm: HomeViewModel = viewModel()) {
         composable(Routes.RECETAS) { RecetasScreen(volver, abrir) }
         composable(Routes.VIDEOS) { VideosScreen(volver, abrir) }
         composable(Routes.CURSOS) { CursosScreen(volver, abrir) }
-        composable(Routes.FAVORITOS) { FavoritosScreen(volver, abrir) }
+        composable(Routes.FAVORITOS) {
+            FavoritosScreen(
+                volver = volver,
+                abrir = abrir,
+                onNavigateToRecetas = { nav.navigate(Routes.RECETAS) },
+                onNavigateToVideos = { nav.navigate(Routes.VIDEOS) },
+                onNavigateToCursos = { nav.navigate(Routes.CURSOS) }
+            )
+        }
         composable(Routes.DETALLE, arguments = listOf(navArgument("id") { type = NavType.IntType })) {
             DetalleContenidoScreen(it.arguments?.getInt("id") ?: 0, volver)
         }

@@ -1,11 +1,10 @@
-package com.mastermartini.app.ui.screens.perfil
+package com.mastermartini.app.ui.viewmodels
 
 import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
-import com.mastermartini.app.ui.viewmodels.BaseViewModel
 import com.mastermartini.app.utils.Validaciones
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*

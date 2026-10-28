@@ -1,8 +1,7 @@
-package com.mastermartini.app.ui.screens.login
+package com.mastermartini.app.ui.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.viewModelScope
-import com.mastermartini.app.ui.viewmodels.BaseViewModel
 import com.mastermartini.app.utils.Validaciones
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.*
