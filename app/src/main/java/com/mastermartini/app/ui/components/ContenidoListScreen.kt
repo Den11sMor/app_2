@@ -139,11 +139,11 @@ fun ContenidoListScreen(
                                         .background(Color(0xFFE8DEF8)),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Favorite,
+                                    androidx.compose.foundation.Image(
+                                        painter = androidx.compose.ui.res.painterResource(com.mastermartini.app.R.drawable.favoritos_vacios),
                                         contentDescription = "Favoritos",
-                                        tint = Color(0xFF6750A4),
-                                        modifier = Modifier.size(64.dp)
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = androidx.compose.ui.layout.ContentScale.Fit
                                     )
                                 }
 
