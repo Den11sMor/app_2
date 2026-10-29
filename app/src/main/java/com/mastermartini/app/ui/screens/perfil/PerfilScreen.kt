@@ -123,7 +123,7 @@ fun PerfilScreen(
                     modifier = Modifier
                         .size(130.dp)
                         .clip(RoundedCornerShape(32.dp))
-                        .background(Color(0xFFC1ED99)), // Verde pastel suave como en el boceto
+                        .background(Color(0xFFE8DEF8)), // Fondo violeta suave neutro tipo Instagram
                     contentAlignment = Alignment.Center
                 ) {
                     if (imagen != null) {
@@ -136,9 +136,9 @@ fun PerfilScreen(
                     } else {
                         Icon(
                             imageVector = Icons.Default.Person,
-                            contentDescription = null,
-                            tint = Color(0xFF386A20),
-                            modifier = Modifier.size(64.dp)
+                            contentDescription = "Perfil neutro",
+                            tint = Color(0xFF6750A4),
+                            modifier = Modifier.size(68.dp)
                         )
                     }
                 }
@@ -317,15 +317,28 @@ fun PerfilScreen(
                 }
             }
 
-            // Botón para cerrar sesión
-            TextButton(
+            // Botón destacado para cerrar sesión al final de la pantalla
+            OutlinedButton(
                 onClick = { confirmarSalida = true },
-                enabled = !estado.cargando
+                enabled = !estado.cargando,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.error)
             ) {
-                Text("Cerrar sesión", color = MaterialTheme.colorScheme.error)
+                Icon(
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("Cerrar sesión", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 
@@ -333,10 +346,23 @@ fun PerfilScreen(
     if (confirmarSalida) {
         AlertDialog(
             onDismissRequest = { confirmarSalida = false },
-            title = { Text("Cerrar sesión") },
-            text = { Text("Tus datos y favoritos seguirán guardados en este dispositivo.") },
-            confirmButton = { TextButton(onClick = cerrarSesion) { Text("Cerrar sesión", color = MaterialTheme.colorScheme.error) } },
-            dismissButton = { TextButton(onClick = { confirmarSalida = false }) { Text("Cancelar") } }
+            title = { Text("Cerrar sesión", fontWeight = FontWeight.Bold) },
+            text = { Text("Se cerrará tu sesión actual y regresarás a la pantalla de inicio de sesión.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        confirmarSalida = false
+                        cerrarSesion()
+                    }
+                ) {
+                    Text("Cerrar sesión", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmarSalida = false }) {
+                    Text("Cancelar")
+                }
+            }
         )
     }
 }

@@ -161,7 +161,7 @@ fun HomeScreen(
                     )
                 }
 
-                // Avatar circular del usuario
+                // Avatar neutro del usuario (estilo Instagram, neutro hasta que suba su propia foto)
                 Box(
                     modifier = Modifier
                         .size(48.dp)
@@ -179,7 +179,7 @@ fun HomeScreen(
                         )
                     } else {
                         Icon(
-                            imageVector = Icons.Default.Person,
+                            imageVector = Icons.Outlined.Person,
                             contentDescription = "Perfil",
                             tint = Color(0xFF6750A4),
                             modifier = Modifier.size(28.dp)
@@ -189,12 +189,16 @@ fun HomeScreen(
             }
 
             // 2. Saludo del usuario + Chip de interés
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                val nombreUsuario = usuario?.nombre?.trim().orEmpty()
+                val saludoTexto = if (nombreUsuario.isNotBlank()) "Bienvenido,\n$nombreUsuario" else "Bienvenido"
+
                 Text(
-                    text = "Bienvenido${usuario?.nombre?.let { ", $it" } ?: ""}",
-                    fontSize = 32.sp,
+                    text = saludoTexto,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Serif,
+                    lineHeight = 36.sp, // Interlineado holgado para que el nombre/apellido no choque con la primera línea
                     color = Color(0xFF1D1B20)
                 )
 
@@ -282,7 +286,7 @@ fun HomeScreen(
 
                             Spacer(modifier = Modifier.width(12.dp))
 
-                            // Ilustración/Icono lateral
+                            // Ilustración/Foto lateral
                             Box(
                                 modifier = Modifier
                                     .size(90.dp)
@@ -290,12 +294,21 @@ fun HomeScreen(
                                     .background(Color(0xFFE8DEF8)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(
-                                    imageVector = item.icono,
-                                    contentDescription = null,
-                                    tint = Color(0xFF6750A4),
-                                    modifier = Modifier.size(44.dp)
-                                )
+                                if (page == 0) {
+                                    Image(
+                                        painter = androidx.compose.ui.res.painterResource(com.mastermartini.app.R.drawable.inicio_destacado),
+                                        contentDescription = item.titulo,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = item.icono,
+                                        contentDescription = null,
+                                        tint = Color(0xFF6750A4),
+                                        modifier = Modifier.size(44.dp)
+                                    )
+                                }
                             }
                         }
                     }
