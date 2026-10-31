@@ -1,4 +1,4 @@
-# Verificación de esta entrega
+# Verificación de la versión inicial (25 de octubre de 2026)
 
 ## Resultados comprobados
 
@@ -35,3 +35,9 @@ Para ejecutar las pruebas instrumentadas:
 ## Contenido de demostración
 
 Los videos son guías de estudio sin reproducción; los cursos contienen programas locales. Las cuentas se guardan únicamente en este dispositivo y el temporizador no genera alarmas de fondo.
+
+## Actualización del 31 de octubre: videos
+
+La versión 1.1 incorpora dos microclases animadas con voz en español y reproducción local. La descripción anterior de videos sin reproducción corresponde a la versión inicial. Consulta [VIDEOS.md](VIDEOS.md) para conocer los archivos, controles y pruebas de esta actualización.
+
+En main existe una discrepancia posterior entre la validación de correos con + y su prueba: 5 de las 6 pruebas unitarias pasan. La tarea de videos conserva esa regla sin modificarla.

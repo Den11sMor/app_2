@@ -337,9 +337,9 @@ fun HomeScreen(
                     onClick = onNavigateToRecetas
                 )
 
-                // Tarjeta 2: Videos · guías de estudio
+                // Tarjeta 2: Videos
                 CategoryCard(
-                    titulo = "Videos · guías de estudio",
+                    titulo = "Videos",
                     icono = Icons.Default.PlayCircle,
                     onClick = onNavigateToVideos
                 )
