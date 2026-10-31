@@ -92,11 +92,11 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
 
             contenido?.let { item ->
                 val imagenRes = item.obtenerImagenResId(context)
-                val videoRes = item.obtenerVideoResId(context)
+                val videoRes = item.obtenerVideoResId()
 
                 // 1. Reproductor de Video (Si es un contenido de tipo Video y existe el archivo en res/raw/)
                 if (item.tipo == "Video" && videoRes != null) {
-                    ReproductorVideoView(videoRes)
+                    ReproductorVideo(videoRes)
                 } else {
                     // Ilustración / Foto de Portada con bordes suavemente curvados
                     Box(
@@ -170,6 +170,21 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                 val partes = item.detalle.split("\n\nPreparación\n", "\n\nPrograma de estudio\n", "\n\nGuía de estudio\n")
                 val ingredientesTexto = partes.getOrNull(0)?.removePrefix("Ingredientes\n").orEmpty()
                 val preparacionTexto = partes.getOrNull(1).orEmpty()
+
+                if (item.tipo == "Video") {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF7F2FA))
+                    ) {
+                        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text("En esta microclase", fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold, color = Color(0xFF1D1B20))
+                            Text(item.detalle.removePrefix("Guía de estudio\n"),
+                                color = Color(0xFF49454F), lineHeight = 22.sp)
+                        }
+                    }
+                }
 
                 // Si es un CURSO, mostramos la Ficha del Curso con Ficha de Datos, Programa de Unidades, Progreso y Certificado
                 if (item.tipo == "Curso") {
@@ -329,7 +344,7 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                 }
 
                 // Sección 3A: Card de Ingredientes (Para Recetas)
-                if (item.tipo != "Curso" && ingredientesTexto.isNotBlank()) {
+                if (item.tipo == "Receta" && ingredientesTexto.isNotBlank()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
@@ -392,7 +407,7 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                 }
 
                 // Sección 3B: Lista numerada de Pasos de Preparación
-                if (preparacionTexto.isNotBlank()) {
+                if (item.tipo != "Video" && preparacionTexto.isNotBlank()) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -558,36 +573,5 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
-    }
-}
-
-// Componente de reproductor de video nativo con controles para Compose
-@Composable
-private fun ReproductorVideoView(videoResId: Int) {
-    val context = LocalContext.current
-    val videoUri = remember(videoResId) {
-        android.net.Uri.parse("android.resource://${context.packageName}/$videoResId")
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(230.dp),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Black),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        androidx.compose.ui.viewinterop.AndroidView(
-            factory = { ctx ->
-                android.widget.VideoView(ctx).apply {
-                    setVideoURI(videoUri)
-                    val mediaController = android.widget.MediaController(ctx)
-                    mediaController.setAnchorView(this)
-                    setMediaController(mediaController)
-                    start()
-                }
-            },
-            modifier = Modifier.fillMaxSize()
-        )
     }
 }

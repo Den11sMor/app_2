@@ -90,7 +90,7 @@ fun ContenidoListScreen(
             if (tipo == "Video") {
                 item {
                     Text(
-                        text = "Guías de estudio locales. Los archivos de video aún no están incluidos.",
+                        text = "Microclases animadas con narración en español. Puedes verlas sin internet.",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color(0xFF49454F)
                     )

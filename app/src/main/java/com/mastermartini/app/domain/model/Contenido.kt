@@ -1,6 +1,7 @@
 package com.mastermartini.app.domain.model
 
 import android.content.Context
+import com.mastermartini.app.R
 
 // Las tarjetas trabajan con Contenido sin depender de un tipo específico.
 abstract class Contenido(
@@ -32,14 +33,11 @@ abstract class Contenido(
     }
 
     // Obtiene el ID del recurso de video en la carpeta res/raw/ si existe
-    fun obtenerVideoResId(context: Context): Int? {
-        val nombre = when (id) {
-            4 -> "tecnicas_chocolateria"
-            5 -> "decoracion_tortas"
+    fun obtenerVideoResId(): Int? {
+        return when (id) {
+            4 -> R.raw.tecnicas_chocolateria
+            5 -> R.raw.decoracion_tortas
             else -> null
-        } ?: return null
-
-        val resId = context.resources.getIdentifier(nombre, "raw", context.packageName)
-        return if (resId != 0) resId else null
+        }
     }
 }

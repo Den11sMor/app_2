@@ -53,6 +53,17 @@ Ejemplo: guardar un favorito.
 
 ## Límites que debes conocer
 
-Las guías de video y los programas de cursos son contenido educativo local de demostración. No hay videos reproducibles, conexión a un servidor, inscripción en cursos ni notificaciones del temporizador. No afirmar esas funciones durante la presentación.
+Los videos son dos microclases animadas originales, con narración en español, que se reproducen localmente. Los programas de cursos siguen siendo contenido de demostración: no hay inscripción, certificados descargables ni notificaciones del temporizador.
 
 No se recibió un documento de reglas de negocio específico aparte de la rúbrica. Si el profesor entregó otro enunciado, hay que contrastarlo antes de entregar.
+
+## Revisión de los videos
+
+- [ ] Abrir cada microclase y pulsar Reproducir.
+- [ ] Escuchar la narración y comprobar la imagen.
+- [ ] Pausar, adelantar y reproducir desde el final.
+- [ ] Abrir pantalla completa y girar el teléfono.
+- [ ] Cambiar de aplicación y comprobar que el sonido se pausa.
+- [ ] Volver al catálogo y comprobar que no continúa el sonido.
+- [ ] Activar modo avión y reproducir ambos videos.
+- [ ] Comprobar que los favoritos anteriores se conservan al instalar la actualización.
