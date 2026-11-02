@@ -1,11 +1,11 @@
 # Tus commits en la rama Luis
 
-Esta entrega se guarda en dos commits locales en la rama `Luis`:
+El avance inicial se guardó en dos commits en la rama `Luis`:
 
 1. `feat: completar registro, perfil y favoritos con persistencia local` — aplicación y pruebas.
 2. `docs: agregar guía de revisión y resultados de pruebas` — explicación, revisión de la rúbrica y verificaciones.
 
-Se usó la identidad de Git que ya estaba configurada en este repositorio. Los commits todavía no se han subido a GitHub.
+Se usó la identidad de Git que ya estaba configurada en este repositorio. Ese avance inicial ya fue subido a GitHub e integrado en main.
 
 ## Cómo se hicieron
 

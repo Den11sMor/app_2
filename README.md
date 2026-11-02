@@ -9,7 +9,7 @@ Proyecto académico en Kotlin y Jetpack Compose. Conserva el catálogo y la estr
 3. Ejecutar la variante `debug` en un emulador o teléfono con Android 7.0 o superior.
 4. Crear una cuenta local, elegir intereses y explorar el catálogo.
 
-No se necesita una API, claves ni un servidor. La aplicación de depuración usa el identificador `com.mastermartini.app.debug`.
+No se necesita una API, claves ni un servidor. La aplicación de depuración usa el identificador `com.mastermartini.app`.
 
 ## Funciones
 
@@ -18,7 +18,7 @@ No se necesita una API, claves ni un servidor. La aplicación de depuración usa
 - Login con credenciales y sesión recordada entre aperturas.
 - Contraseñas derivadas con PBKDF2, sal aleatoria y comparación del hash.
 - Intereses editables desde el perfil.
-- Catálogo local de recetas, guías de videos y programas de cursos.
+- Catálogo local de recetas, microclases en video y programas de cursos.
 - Búsqueda por título o categoría y detalles según el contenido seleccionado.
 - Favoritos persistentes separados por usuario.
 - Perfil editable, foto desde cámara o galería y cierre de sesión.
@@ -59,7 +59,7 @@ Consulta también [la guía de revisión](docs/REVISION.md) y [los pasos para tu
 ## Alcance y pendientes de contenido
 
 - Las cuentas y los datos son locales. No se sincronizan con otros teléfonos.
-- Los videos incluyen guías de estudio, no archivos de video ni reproducción.
+- Incluye dos microclases animadas con narración en español: Técnicas de chocolatería (1:25) y Decoración de tortas (1:18). Se reproducen sin internet con controles y pantalla completa.
 - Los cursos incluyen programas de demostración, sin inscripción ni certificación.
 - El temporizador ofrece información visual en la pantalla de detalle; no genera alarmas ni notificaciones en segundo plano.
 - El acceso a cámara y galería debe probarse en el teléfono que se usará para la presentación.
@@ -70,3 +70,7 @@ Consulta también [la guía de revisión](docs/REVISION.md) y [los pasos para tu
 - [Room](https://developer.android.com/training/data-storage/room)
 - [Selector de fotos](https://developer.android.com/training/data-storage/shared/photo-picker)
 - [FileProvider](https://developer.android.com/reference/androidx/core/content/FileProvider)
+
+## Videos de la versión 1.1
+
+Consulta [VIDEOS.md](docs/VIDEOS.md) para ver el contenido, las fuentes, la generación de los archivos y las comprobaciones pendientes en teléfono.

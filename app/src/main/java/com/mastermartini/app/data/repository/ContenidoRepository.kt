@@ -18,6 +18,9 @@ class ContenidoRepository(private val dao: ContenidoDao) {
             // Se ejecuta la inserción inicial dentro del hilo de E/S (Dispatchers.IO) para evitar cierres en el hilo principal.
             withContext(Dispatchers.IO) {
                 dao.insertarTodos(ejemplos)
+                ejemplos.filter { it.tipo == "Video" }.forEach { video ->
+                    dao.actualizarVideo(video.id, video.duracion, video.descripcion, video.detalle)
+                }
             }
         }
         .map { filas ->
@@ -44,12 +47,13 @@ class ContenidoRepository(private val dao: ContenidoDao) {
         ContenidoEntity(3, "Croissant", "Receta", "Bollería", "60 minutos + reposo",
             "Una introducción al laminado con mantequilla.",
             "Ingredientes\n500 g de harina\n250 ml de leche\n50 g de azúcar\n10 g de levadura seca\n10 g de sal\n250 g de mantequilla para laminar\n1 huevo para pintar\n\nPreparación\n1. Amasa harina, leche, azúcar, levadura y sal. Refrigera una hora.\n2. Encierra la mantequilla fría dentro de la masa.\n3. Estira y realiza tres pliegues simples; enfría 30 minutos entre cada uno.\n4. Corta triángulos y enrolla. Deja fermentar hasta aumentar su volumen.\n5. Pinta con huevo y hornea a 190 °C entre 18 y 22 minutos."),
-        ContenidoEntity(4, "Técnicas de chocolatería", "Video", "Chocolatería", "12 minutos",
-            "Guía de estudio: templado, moldes y conservación.",
-            "Guía de estudio\n1. Identifica los tipos de chocolate.\n2. Revisa la temperatura recomendada por el fabricante.\n3. Practica el templado en una superficie limpia y seca.\n4. Usa moldes secos y evita el contacto con agua.\n\nEste prototipo contiene una guía local. El archivo de video aún no está incluido."),
-        ContenidoEntity(5, "Decoración de tortas", "Video", "Pastelería", "8 minutos",
-            "Guía de estudio para practicar con manga pastelera.",
-            "Guía de estudio\n1. Nivela y enfría la torta.\n2. Aplica una capa fina de cobertura.\n3. Practica líneas sobre papel antes de decorar.\n4. Prueba boquillas de estrella y redondas.\n\nEste prototipo contiene una guía local. El archivo de video aún no está incluido."),
+        ContenidoEntity(4, "Técnicas de chocolatería", "Video", "Chocolatería", "1 min 25 s",
+            "Microclase animada con voz en español sobre templado, siembra y prueba del chocolate.",
+            "Guía de estudio\n1. Prepara utensilios limpios y secos.\n2. Funde el chocolate suavemente.\n3. Sigue la curva de templado del fabricante.\n4. Haz una prueba antes de llenar el molde.\n5. Compara brillo y textura en tu práctica.\n\nVideo educativo ilustrado de Master Martini. Incluye narración y texto de apoyo."),
+        ContenidoEntity(5, "Decoración de tortas", "Video", "Pastelería", "1 min 18 s",
+            "Microclase animada con voz en español para practicar cobertura y manejo de la manga pastelera.",
+            "Guía de estudio\n1. Trabaja con una torta fría y nivelada.\n2. Aplica una capa fina de cobertura.\n3. Prepara la manga y orienta la boquilla.\n4. Practica puntos sobre papel para hornear.\n5. Repite un borde sencillo y equilibrado.\n\nVideo educativo ilustrado de Master Martini. Incluye narración y texto de apoyo."),
+
         ContenidoEntity(6, "Pastelería básica", "Curso", "Principiante", "4 horas",
             "Un recorrido práctico por las bases de la pastelería.",
             "Programa de estudio\nUnidad 1. Higiene, utensilios y medidas.\nUnidad 2. Batidos y bizcochos.\nUnidad 3. Cremas y rellenos.\nUnidad 4. Montaje y decoración.\n\nActividad sugerida\nPrepara la torta de chocolate del catálogo y registra el resultado en tu foto de perfil.\n\nContenido educativo de demostración; no incluye inscripción ni certificación."),

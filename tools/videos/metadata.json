@@ -1,0 +1,18 @@
+{
+  "tecnicas_chocolateria": {
+    "titulo": "Técnicas de chocolatería",
+    "duracion_segundos": 85.5,
+    "ancho": 960,
+    "alto": 540,
+    "fps": 20,
+    "bytes": 1315506
+  },
+  "decoracion_tortas": {
+    "titulo": "Decoración de tortas",
+    "duracion_segundos": 78.6,
+    "ancho": 960,
+    "alto": 540,
+    "fps": 20,
+    "bytes": 1097181
+  }
+}
