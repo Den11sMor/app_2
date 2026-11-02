@@ -1,6 +1,6 @@
-package com.mastermartini.app.ui.screens.recetas
+package com.mastermartini.app.ui.viewmodels
 
 import android.app.Application
-import com.mastermartini.app.ui.viewmodels.ContenidoViewModel
 
+// ViewModel para administrar la pantalla de catálogo de recetas.
 class RecetasViewModel(application: Application) : ContenidoViewModel(application)

@@ -1,6 +1,10 @@
-package com.mastermartini.app.ui.screens.detalle
+package com.mastermartini.app.ui.screens
 
+import android.net.Uri
+import android.widget.MediaController
+import android.widget.VideoView
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,9 +28,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mastermartini.app.ui.components.*
+import com.mastermartini.app.ui.viewmodels.DetalleViewModel
 
 // Pantalla de Detalle de Receta/Contenido adaptada al boceto estándar con soporte para fotos
 @OptIn(ExperimentalMaterial3Api::class)
@@ -308,7 +314,7 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFFAF7FC)),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE7E0EC))
+                        border = BorderStroke(1.dp, Color(0xFFE7E0EC))
                     ) {
                         Column(
                             modifier = Modifier.padding(20.dp),
@@ -566,7 +572,7 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
 private fun ReproductorVideoView(videoResId: Int) {
     val context = LocalContext.current
     val videoUri = remember(videoResId) {
-        android.net.Uri.parse("android.resource://${context.packageName}/$videoResId")
+        Uri.parse("android.resource://${context.packageName}/$videoResId")
     }
 
     Card(
@@ -577,11 +583,11 @@ private fun ReproductorVideoView(videoResId: Int) {
         colors = CardDefaults.cardColors(containerColor = Color.Black),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        androidx.compose.ui.viewinterop.AndroidView(
+        AndroidView(
             factory = { ctx ->
-                android.widget.VideoView(ctx).apply {
+                VideoView(ctx).apply {
                     setVideoURI(videoUri)
-                    val mediaController = android.widget.MediaController(ctx)
+                    val mediaController = MediaController(ctx)
                     mediaController.setAnchorView(this)
                     setMediaController(mediaController)
                     start()

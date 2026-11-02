@@ -1,4 +1,4 @@
-package com.mastermartini.app.ui.screens.intereses
+package com.mastermartini.app.ui.screens
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mastermartini.app.ui.components.*
+import com.mastermartini.app.ui.viewmodels.InteresesViewModel
 
 // Modelo interno para mapear cada opción de interés con su subtítulo e icono
 private data class OpcionInfo(

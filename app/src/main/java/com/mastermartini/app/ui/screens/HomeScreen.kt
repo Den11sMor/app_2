@@ -1,4 +1,4 @@
-package com.mastermartini.app.ui.screens.home
+package com.mastermartini.app.ui.screens
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
@@ -23,15 +23,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mastermartini.app.R
+import com.mastermartini.app.ui.viewmodels.HomeViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -78,7 +82,7 @@ fun HomeScreen(
     val pagerState = rememberPagerState(pageCount = { banners.size })
 
     // Carga la foto de perfil en segundo plano si existe una ruta guardada
-    val fotoPerfil by produceState<androidx.compose.ui.graphics.ImageBitmap?>(null, usuario?.foto) {
+    val fotoPerfil by produceState<ImageBitmap?>(null, usuario?.foto) {
         value = withContext(Dispatchers.IO) {
             val ruta = usuario?.foto.orEmpty()
             if (ruta.isNotBlank()) {
@@ -296,7 +300,7 @@ fun HomeScreen(
                             ) {
                                 if (page == 0) {
                                     Image(
-                                        painter = androidx.compose.ui.res.painterResource(com.mastermartini.app.R.drawable.inicio_destacado),
+                                        painter = painterResource(R.drawable.inicio_destacado),
                                         contentDescription = item.titulo,
                                         modifier = Modifier.fillMaxSize(),
                                         contentScale = ContentScale.Crop
