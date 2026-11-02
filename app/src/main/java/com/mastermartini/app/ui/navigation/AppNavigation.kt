@@ -7,16 +7,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
-import com.mastermartini.app.ui.screens.login.LoginScreen
-import com.mastermartini.app.ui.screens.registro.RegistroScreen
-import com.mastermartini.app.ui.screens.intereses.InteresesScreen
-import com.mastermartini.app.ui.screens.home.*
-import com.mastermartini.app.ui.screens.recetas.RecetasScreen
-import com.mastermartini.app.ui.screens.detalle.DetalleContenidoScreen
-import com.mastermartini.app.ui.screens.videos.VideosScreen
-import com.mastermartini.app.ui.screens.cursos.CursosScreen
-import com.mastermartini.app.ui.screens.favoritos.FavoritosScreen
-import com.mastermartini.app.ui.screens.perfil.PerfilScreen
+import com.mastermartini.app.ui.screens.LoginScreen
+import com.mastermartini.app.ui.screens.RegistroScreen
+import com.mastermartini.app.ui.screens.InteresesScreen
+import com.mastermartini.app.ui.screens.RecetasScreen
+import com.mastermartini.app.ui.screens.DetalleContenidoScreen
+import com.mastermartini.app.ui.screens.VideosScreen
+import com.mastermartini.app.ui.screens.CursosScreen
+import com.mastermartini.app.ui.screens.FavoritosScreen
+import com.mastermartini.app.ui.screens.HomeScreen
+import com.mastermartini.app.ui.screens.PerfilScreen
+import com.mastermartini.app.ui.viewmodels.HomeViewModel
 
 object Routes {
     const val LOGIN = "login"

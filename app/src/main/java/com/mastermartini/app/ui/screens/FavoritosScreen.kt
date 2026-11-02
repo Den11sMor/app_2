@@ -1,8 +1,9 @@
-package com.mastermartini.app.ui.screens.favoritos
+package com.mastermartini.app.ui.screens
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mastermartini.app.ui.components.ContenidoListScreen
+import com.mastermartini.app.ui.viewmodels.FavoritosViewModel
 
 // Pantalla de favoritos adaptada al nuevo diseño del boceto
 @Composable

@@ -1,4 +1,4 @@
-package com.mastermartini.app.ui.screens.perfil
+package com.mastermartini.app.ui.screens
 
 import android.content.ActivityNotFoundException
 import android.graphics.BitmapFactory
@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -71,7 +73,7 @@ fun PerfilScreen(
     }
 
     // Carga la foto guardada en segundo plano
-    val imagen by produceState<androidx.compose.ui.graphics.ImageBitmap?>(null, estado.foto) {
+    val imagen by produceState<ImageBitmap?>(null, estado.foto) {
         value = withContext(Dispatchers.IO) {
             if (estado.foto.isBlank()) null else runCatching {
                 BitmapFactory.decodeFile(estado.foto)?.asImageBitmap()
@@ -326,7 +328,7 @@ fun PerfilScreen(
                     .height(52.dp),
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.error)
+                border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.error)
             ) {
                 Icon(
                     imageVector = Icons.Default.Lock,
