@@ -3,22 +3,14 @@ package com.mastermartini.app.ui.viewmodels
 import android.app.Application
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-// Estado de la interfaz de selección de intereses.
 data class InteresesUiState(
-    val seleccionados: Set<String> = emptySet(),
-    val mensaje: String? = null,
-    val cargando: Boolean = false,
-    val guardado: Boolean = false,
-    val listo: Boolean = false
+    val seleccionados: Set<String> = emptySet(), val mensaje: String? = null,
+    val cargando: Boolean = false, val guardado: Boolean = false, val listo: Boolean = false
 )
 
-// ViewModel para administrar la selección de temas de interés del usuario.
 class InteresesViewModel(application: Application) : BaseViewModel(application) {
     val opciones = listOf("Cocina", "Recetas", "Coctelería", "Gastronomía")
     private val _estado = MutableStateFlow(InteresesUiState())
@@ -31,17 +23,13 @@ class InteresesViewModel(application: Application) : BaseViewModel(application) 
         }
     }
 
-    // Selecciona o deselecciona un tema de interés.
     fun seleccionar(opcion: String) {
-        _estado.update {
-            it.copy(
-                seleccionados = if (opcion in it.seleccionados) it.seleccionados - opcion else it.seleccionados + opcion,
-                mensaje = null
-            )
-        }
+        _estado.update { it.copy(
+            seleccionados = if (opcion in it.seleccionados) it.seleccionados - opcion else it.seleccionados + opcion,
+            mensaje = null
+        ) }
     }
 
-    // Guarda los intereses seleccionados en el perfil de Room.
     fun guardar() {
         val actual = _estado.value
         if (actual.cargando || !actual.listo) return
@@ -54,8 +42,7 @@ class InteresesViewModel(application: Application) : BaseViewModel(application) 
             try {
                 app.usuarios.guardarIntereses(actual.seleccionados)
                 _estado.update { it.copy(cargando = false, guardado = true) }
-            } catch (e: CancellationException) {
-                throw e
+            } catch (e: CancellationException) { throw e
             } catch (_: Exception) {
                 _estado.update { it.copy(cargando = false, mensaje = "No se pudieron guardar tus intereses") }
             }
