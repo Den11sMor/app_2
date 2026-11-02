@@ -1,6 +1,10 @@
-package com.mastermartini.app.ui.screens.detalle
+package com.mastermartini.app.ui.screens
 
+import android.net.Uri
+import android.widget.MediaController
+import android.widget.VideoView
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,9 +28,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mastermartini.app.ui.components.*
+import com.mastermartini.app.ui.viewmodels.DetalleViewModel
 
 // Pantalla de Detalle de Receta/Contenido adaptada al boceto estándar con soporte para fotos
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,11 +98,11 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
 
             contenido?.let { item ->
                 val imagenRes = item.obtenerImagenResId(context)
-                val videoRes = item.obtenerVideoResId()
+                val videoRes = item.obtenerVideoResId(context)
 
                 // 1. Reproductor de Video (Si es un contenido de tipo Video y existe el archivo en res/raw/)
                 if (item.tipo == "Video" && videoRes != null) {
-                    ReproductorVideo(videoRes)
+                    ReproductorVideoView(videoRes)
                 } else {
                     // Ilustración / Foto de Portada con bordes suavemente curvados
                     Box(
@@ -170,21 +176,6 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                 val partes = item.detalle.split("\n\nPreparación\n", "\n\nPrograma de estudio\n", "\n\nGuía de estudio\n")
                 val ingredientesTexto = partes.getOrNull(0)?.removePrefix("Ingredientes\n").orEmpty()
                 val preparacionTexto = partes.getOrNull(1).orEmpty()
-
-                if (item.tipo == "Video") {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF7F2FA))
-                    ) {
-                        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text("En esta microclase", fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold, color = Color(0xFF1D1B20))
-                            Text(item.detalle.removePrefix("Guía de estudio\n"),
-                                color = Color(0xFF49454F), lineHeight = 22.sp)
-                        }
-                    }
-                }
 
                 // Si es un CURSO, mostramos la Ficha del Curso con Ficha de Datos, Programa de Unidades, Progreso y Certificado
                 if (item.tipo == "Curso") {
@@ -323,7 +314,7 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFFAF7FC)),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE7E0EC))
+                        border = BorderStroke(1.dp, Color(0xFFE7E0EC))
                     ) {
                         Column(
                             modifier = Modifier.padding(20.dp),
@@ -344,7 +335,7 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                 }
 
                 // Sección 3A: Card de Ingredientes (Para Recetas)
-                if (item.tipo == "Receta" && ingredientesTexto.isNotBlank()) {
+                if (item.tipo != "Curso" && ingredientesTexto.isNotBlank()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
@@ -407,7 +398,7 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                 }
 
                 // Sección 3B: Lista numerada de Pasos de Preparación
-                if (item.tipo != "Video" && preparacionTexto.isNotBlank()) {
+                if (preparacionTexto.isNotBlank()) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -573,5 +564,36 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
+    }
+}
+
+// Componente de reproductor de video nativo con controles para Compose
+@Composable
+private fun ReproductorVideoView(videoResId: Int) {
+    val context = LocalContext.current
+    val videoUri = remember(videoResId) {
+        Uri.parse("android.resource://${context.packageName}/$videoResId")
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(230.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Black),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        AndroidView(
+            factory = { ctx ->
+                VideoView(ctx).apply {
+                    setVideoURI(videoUri)
+                    val mediaController = MediaController(ctx)
+                    mediaController.setAnchorView(this)
+                    setMediaController(mediaController)
+                    start()
+                }
+            },
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }

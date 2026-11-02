@@ -1,8 +1,7 @@
-package com.mastermartini.app.ui.screens.intereses
+package com.mastermartini.app.ui.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.viewModelScope
-import com.mastermartini.app.ui.viewmodels.BaseViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

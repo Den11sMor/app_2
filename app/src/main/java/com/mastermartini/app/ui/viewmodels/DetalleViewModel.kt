@@ -1,12 +1,12 @@
-package com.mastermartini.app.ui.screens.detalle
+package com.mastermartini.app.ui.viewmodels
 
 import android.app.Application
 import android.os.SystemClock
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.mastermartini.app.ui.viewmodels.ContenidoViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class DetalleViewModel(application: Application, private val savedState: SavedStateHandle) : ContenidoViewModel(application) {
