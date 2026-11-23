@@ -15,6 +15,9 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          # Evita el paquete antiguo "tools", que ya no encuentra sdkmanager.
+          packages: platform-tools
       - run: sdkmanager 'platforms;android-37.0' 'build-tools;36.0.0'
       - run: chmod +x gradlew && ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:coberturaModulos :app:coberturaLogica --no-daemon --max-workers=2
       - uses: actions/upload-artifact@v4
