@@ -1,0 +1,11 @@
+﻿Tarea,Responsable,Estado,Evidencia
+"CRUD cursos, recetas y videos",Luis,Hecho,"15 endpoints, formularios y Retrofit con JWT"
+Integrar backend del compañero,Equipo,Hecho localmente,"Backend único 4.2, Java 21, catálogo JOINED y autenticación JWT"
+Crear MySQL del equipo,Luis,Hecho,master_martini: ocho tablas reales; SQL sin datos exportado
+API externa,Luis,Hecho,"TheMealDB: búsqueda, detalle, imágenes y prueba real"
+Pruebas y cobertura,Equipo,Hecho,78 pruebas; backend global 80.38%; lógica móvil Android 84.26%
+APK firmado y comentarios,Luis,Hecho,"Release verificado, comentarios de módulos y guía de defensa"
+Publicar integración en GitHub,Luis,Pendiente de aprobación,El usuario pidió autorizar cada commit antes de crearlo
+Desplegar HTTPS y MySQL remota,Equipo,Pendiente,Faltan alojamiento y credenciales del proveedor
+Pruebas manuales Android,Equipo,Pendiente,Usar un Android autorizado; no se instaló en teléfono del trabajo
+Trello,Equipo,Pendiente,Falta acceso al tablero; CSV preparado sin afirmar tarjetas creadas

@@ -1,0 +1,40 @@
+{
+  "cursos": [
+    {
+      "titulo": "Pastelería básica",
+      "categoria": "Principiante",
+      "duracion": "4 horas",
+      "descripcion": "Un recorrido práctico por las bases de la pastelería.",
+      "detalle": "Programa de estudio\nUnidad 1. Higiene, utensilios y medidas.\nUnidad 2. Batidos y bizcochos.\nUnidad 3. Cremas y rellenos.\nUnidad 4. Montaje y decoración.\n\nActividad sugerida\nPrepara la torta de chocolate del catálogo. Curso de práctica sin certificación.",
+      "videoUrl": ""
+    }
+  ],
+  "recetas": [
+    {
+      "titulo": "Torta de chocolate",
+      "categoria": "Pastelería",
+      "duracion": "45 minutos",
+      "descripcion": "Una preparación para compartir y practicar mezclas básicas.",
+      "detalle": "Ingredientes\n250 g de harina\n200 g de chocolate\n150 g de azúcar\n3 huevos\n150 ml de leche\n100 g de mantequilla\n10 g de polvo de hornear\n\nPreparación\n1. Precalienta el horno a 180 °C y engrasa un molde.\n2. Derrite el chocolate con la mantequilla.\n3. Bate huevos y azúcar. Agrega leche y chocolate tibio.\n4. Incorpora harina y polvo de hornear tamizados.\n5. Hornea entre 30 y 35 minutos y comprueba con un palillo. Deja enfriar.",
+      "videoUrl": ""
+    }
+  ],
+  "videos": [
+    {
+      "titulo": "Técnicas de chocolatería",
+      "categoria": "Chocolatería",
+      "duracion": "1 min 25 s",
+      "descripcion": "Microclase animada con narración en español sobre templado y siembra.",
+      "detalle": "1. Prepara utensilios limpios y secos.\n2. Funde el chocolate suavemente.\n3. Sigue la curva de templado del fabricante.\n4. Haz una prueba antes de llenar el molde.\n\nVideo educativo propio del proyecto. La versión de esta sección se reproduce por HTTPS; el catálogo local incluye una copia sin internet.",
+      "videoUrl": "https://raw.githubusercontent.com/Den11sMor/app_2/cb965d2dd2f9ee28b9f4b7cc37b4b9bf5aad3968/app/src/main/res/raw/tecnicas_chocolateria.mp4"
+    },
+    {
+      "titulo": "Decoración de tortas",
+      "categoria": "Pastelería",
+      "duracion": "1 min 18 s",
+      "descripcion": "Microclase animada con narración en español para practicar cobertura y manga pastelera.",
+      "detalle": "1. Trabaja con una torta fría y nivelada.\n2. Aplica una capa fina de cobertura.\n3. Prepara la manga y orienta la boquilla.\n4. Practica puntos sobre papel para hornear.\n5. Repite un borde sencillo y equilibrado.",
+      "videoUrl": "https://raw.githubusercontent.com/Den11sMor/app_2/cb965d2dd2f9ee28b9f4b7cc37b4b9bf5aad3968/app/src/main/res/raw/decoracion_tortas.mp4"
+    }
+  ]
+}

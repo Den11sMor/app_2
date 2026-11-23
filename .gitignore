@@ -21,6 +21,7 @@ local.properties
 *.jks
 *.keystore
 signing.properties
+/private-signing/
 .env
 .env.*
 !.env.example

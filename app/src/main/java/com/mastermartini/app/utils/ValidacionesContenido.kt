@@ -3,6 +3,8 @@ package com.mastermartini.app.utils
 import com.mastermartini.app.data.remote.ContenidoSolicitud
 import java.net.URI
 
+// Reglas compartidas por los tres formularios. Devuelve el nombre de cada campo y su error.
+// La validación en Android ayuda al usuario; el backend también valida porque debe comprobar cada solicitud.
 object ValidacionesContenido {
     fun validar(datos: ContenidoSolicitud, esVideo: Boolean): Map<String, String> {
         val errores = linkedMapOf<String, String>()

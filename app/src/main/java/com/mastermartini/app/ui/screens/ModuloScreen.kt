@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +21,7 @@ import com.mastermartini.app.ui.components.ContenidoListScreen
 import com.mastermartini.app.ui.components.ReproductorVideo
 import com.mastermartini.app.ui.viewmodels.*
 
+// Mantiene el catálogo local del equipo y abre la gestión del servidor desde el mismo módulo.
 @Composable
 fun ModuloScreen(tipo: String, titulo: String, volver: () -> Unit, abrir: (Int) -> Unit) {
     var modo by rememberSaveable { mutableStateOf("local") }
@@ -46,6 +46,7 @@ fun ModuloScreen(tipo: String, titulo: String, volver: () -> Unit, abrir: (Int) 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+// Comparte el formulario para cursos, recetas y videos; la lógica de guardado está en el ViewModel.
 fun GestionContenidoScreen(tipo: String, titulo: String, volver: () -> Unit) {
     val app = LocalContext.current.applicationContext as MasterMartiniApplication
     var revision by rememberSaveable { mutableIntStateOf(0) }
@@ -54,7 +55,7 @@ fun GestionContenidoScreen(tipo: String, titulo: String, volver: () -> Unit) {
     var busqueda by rememberSaveable { mutableStateOf("") }
     val vm: ModuloViewModel =
         viewModel(
-            key = "remoto-$tipo-${app.red.url.hashCode()}-${app.red.clave.hashCode()}-$revision",
+            key = "remoto-$tipo-${app.red.url.hashCode()}-$revision",
             factory =
                 object : ViewModelProvider.Factory {
                     @Suppress("UNCHECKED_CAST")
@@ -276,50 +277,12 @@ fun GestionContenidoScreen(tipo: String, titulo: String, volver: () -> Unit) {
                 TextButton(onClick = { confirmarEliminar = false }) { Text("Cancelar") }
             },
         )
-    if (configurar) {
-        var url by remember { mutableStateOf(app.red.url) }
-        var clave by remember { mutableStateOf(app.red.clave) }
-        var error by remember { mutableStateOf<String?>(null) }
-        AlertDialog(
-            onDismissRequest = { configurar = false },
-            title = { Text("Conexión con Spring Boot") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(
-                        "Usa HTTPS para un servidor remoto. Por USB: http://127.0.0.1:8080/ y adb reverse tcp:8080 tcp:8080."
-                    )
-                    OutlinedTextField(
-                        url,
-                        { url = it },
-                        label = { Text("URL del backend") },
-                        singleLine = true,
-                    )
-                    OutlinedTextField(
-                        clave,
-                        { clave = it },
-                        label = { Text("Clave API (si está configurada)") },
-                        visualTransformation = PasswordVisualTransformation(),
-                        singleLine = true,
-                    )
-                    error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-                }
+    if (configurar)
+        com.mastermartini.app.ui.components.ServidorDialog(
+            cerrar = { configurar = false },
+            guardado = {
+                revision++
+                configurar = false
             },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        try {
-                            app.red.guardar(url, clave)
-                            revision++
-                            configurar = false
-                        } catch (e: IllegalArgumentException) {
-                            error = e.message
-                        }
-                    }
-                ) {
-                    Text("Guardar y conectar")
-                }
-            },
-            dismissButton = { TextButton(onClick = { configurar = false }) { Text("Cancelar") } },
         )
-    }
 }

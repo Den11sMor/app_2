@@ -2,6 +2,8 @@ package com.mastermartini.app.data.remote
 
 import retrofit2.http.*
 
+// Retrofit transforma estas funciones suspendidas en solicitudes HTTP al módulo de videos.
+// @Path coloca el ID en la ruta; @Body convierte los datos del formulario a JSON.
 interface VideoApi : ContenidoApi {
     @GET("api/videos") override suspend fun listar(): List<ContenidoRespuesta>
 

@@ -91,6 +91,20 @@ tasks.register<JacocoReport>("coberturaModulos") {
 
 tasks.withType<Test>().configureEach {
     systemProperty("mastermartini.live", providers.gradleProperty("liveApi").orElse("false").get())
+    systemProperty("mastermartini.backendLive", providers.gradleProperty("liveBackend").orElse("false").get())
+}
+
+// Informe de toda la lógica móvil: ViewModels, repositorios, modelos con comportamiento y utilidades.
+tasks.register<JacocoReport>("coberturaLogica") {
+    dependsOn("testDebugUnitTest")
+    reports { xml.required.set(true); html.required.set(true) }
+    classDirectories.setFrom(fileTree(layout.buildDirectory.dir("intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes")) {
+        include("**/ui/viewmodels/*ViewModel*.class", "**/data/repository/*.class", "**/utils/*.class",
+            "**/domain/model/Contenido*.class", "**/domain/model/Curso*.class",
+            "**/domain/model/Receta*.class", "**/domain/model/Video*.class", "**/data/remote/NetworkModule*.class", "**/data/remote/ContenidoRespuesta*.class")
+    })
+    sourceDirectories.setFrom(files("src/main/java"))
+    executionData.setFrom(layout.buildDirectory.file("outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"))
 }
 
 // Dependencias y librerías del módulo.
@@ -126,6 +140,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.7.0")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+    testImplementation("org.mockito:mockito-core:5.20.0")
 
     // Pruebas unitarias e instrumentadas.
     testImplementation(libs.junit)

@@ -22,6 +22,7 @@ import com.mastermartini.app.ui.viewmodels.RecetaExternaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+// Muestra datos reales del servicio externo y diferencia carga, error, lista vacía y detalle.
 fun RecetaExternaScreen(volver: () -> Unit) {
     val app = LocalContext.current.applicationContext as MasterMartiniApplication
     val vm: RecetaExternaViewModel =

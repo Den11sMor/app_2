@@ -6,6 +6,8 @@ import java.io.IOException
 import kotlinx.coroutines.CancellationException
 import retrofit2.HttpException
 
+// Contrato de acceso a datos. El ViewModel depende de estas operaciones y no de Retrofit
+// directamente.
 interface CatalogoRemoto {
     suspend fun listar(): List<ContenidoRespuesta>
 
@@ -34,6 +36,7 @@ open class ContenidoRemotoRepository(private val api: ContenidoApi) : CatalogoRe
 
     override suspend fun eliminar(id: Long) = ejecutar { api.eliminar(id) }
 
+    // Todas las operaciones pasan por aquí para mostrar errores consistentes en las tres pantallas.
     private suspend fun <T> ejecutar(accion: suspend () -> T): T =
         try {
             accion()
@@ -52,7 +55,7 @@ open class ContenidoRemotoRepository(private val api: ContenidoApi) : CatalogoRe
             throw ErrorRemoto(
                 error?.mensaje
                     ?: when (e.code()) {
-                        401 -> "Revisa la clave de API en la configuración."
+                        401 -> "La sesión del servidor no está activa o venció. Inicia sesión en modo de cuentas del servidor."
                         404 -> "El contenido ya no existe. Actualiza la lista."
                         else -> "El servidor respondió con error ${e.code()}."
                     },

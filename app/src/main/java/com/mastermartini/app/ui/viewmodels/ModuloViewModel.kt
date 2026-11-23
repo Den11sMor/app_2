@@ -9,6 +9,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+// Estado completo de la pantalla: listado, selección, formulario, errores y carga.
+// Compose observa este estado y actualiza la vista cuando cambia alguno de sus valores.
 data class ModuloUiState(
     val lista: List<ContenidoRespuesta> = emptyList(),
     val seleccionado: ContenidoRespuesta? = null,
@@ -21,6 +23,7 @@ data class ModuloUiState(
 
 open class ModuloViewModel(private val repository: CatalogoRemoto, private val tipo: String) :
     ViewModel() {
+    // Solo el ViewModel modifica el MutableStateFlow. La UI recibe una versión de solo lectura.
     private val _estado = MutableStateFlow(ModuloUiState())
     val estado = _estado.asStateFlow()
 
@@ -28,16 +31,19 @@ open class ModuloViewModel(private val repository: CatalogoRemoto, private val t
         cargar()
     }
 
+    // GET del listado. Primero se espera la respuesta y después se actualiza el estado de la UI.
     fun cargar() = operar {
         val lista = repository.listar()
         _estado.update { it.copy(lista = lista) }
     }
 
+    // GET por ID: consulta de nuevo al servidor, no supone que la tarjeta tiene el último dato.
     fun consultar(id: Long) = operar {
         val item = repository.consultar(id)
         _estado.update { it.copy(seleccionado = item) }
     }
 
+    // Un formulario vacío, sin selección, indica que se creará un registro nuevo.
     fun nuevo() {
         if (!_estado.value.ocupado)
             _estado.update {
@@ -74,6 +80,7 @@ open class ModuloViewModel(private val repository: CatalogoRemoto, private val t
             }
     }
 
+    // Al corregir un campo se limpia solo su error; los demás errores siguen visibles.
     fun cambiar(campo: String, valor: String) {
         _estado.update { estado ->
             val f = estado.formulario ?: return@update estado
@@ -91,6 +98,7 @@ open class ModuloViewModel(private val repository: CatalogoRemoto, private val t
         }
     }
 
+    // Valida antes de enviar. Sin selección usa POST; con un ID seleccionado usa PUT.
     fun guardar() {
         val actual = _estado.value
         val datos = actual.formulario ?: return
@@ -116,6 +124,8 @@ open class ModuloViewModel(private val repository: CatalogoRemoto, private val t
         }
     }
 
+    // La pantalla pide confirmación. Aquí se elimina la fila solo si el servidor confirmó el
+    // DELETE.
     fun eliminar() {
         val actual = _estado.value.seleccionado ?: return
         operar {
@@ -130,6 +140,9 @@ open class ModuloViewModel(private val repository: CatalogoRemoto, private val t
         }
     }
 
+    // Ejecuta en viewModelScope y bloquea pulsaciones repetidas mientras hay una solicitud en
+    // curso.
+    // finally quita el indicador de carga aunque falle la red. La cancelación se vuelve a lanzar.
     private fun operar(accion: suspend () -> Unit) {
         if (_estado.value.ocupado) return
         _estado.update { it.copy(ocupado = true, mensaje = null, exito = null) }

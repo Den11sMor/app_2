@@ -14,7 +14,7 @@ class MasterMartiniApplication : Application() {
     private val database by lazy { AppDatabase.obtener(this) }
 
     // Repositorio global de usuarios.
-    val usuarios by lazy { UsuarioRepository(this, database.usuarioDao()) }
+    val usuarios by lazy { UsuarioRepository(this, database.usuarioDao(), { red.usuarios() }, { red.usuariosRemotos }, { red.cerrarSesion() }) }
 
     // Repositorio global de contenidos (recetas, videos, cursos).
     val contenidos by lazy { ContenidoRepository(database.contenidoDao()) }

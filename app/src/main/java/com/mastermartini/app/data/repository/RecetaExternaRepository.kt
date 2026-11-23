@@ -8,6 +8,7 @@ interface RecetasExternas {
     suspend fun consultar(id: String): RecetaExterna?
 }
 
+// TheMealDB devuelve meals=null cuando no encuentra recetas. Se transforma en una lista vacía.
 class RecetaExternaRepository(private val api: RecetaExternaApi) : RecetasExternas {
     override suspend fun buscar(nombre: String) = api.buscar(nombre.trim()).meals.orEmpty()
 

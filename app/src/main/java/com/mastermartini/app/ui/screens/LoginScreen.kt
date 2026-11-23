@@ -31,6 +31,13 @@ fun LoginScreen(
     vm: LoginViewModel = viewModel()
 ) {
     val estado by vm.estado.collectAsStateWithLifecycle()
+    var configurar by remember { mutableStateOf(false) }
+    var revision by remember { mutableIntStateOf(0) }
+    val usaServidor = remember(revision) { vm.usaServidor }
+    if (configurar) ServidorDialog(
+        cerrar = { configurar = false },
+        guardado = { revision++; configurar = false }
+    )
 
     // Navega al inicio cuando el login es exitoso
     LaunchedEffect(estado.exitoso) {
@@ -157,9 +164,15 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            TextButton(onClick = { configurar = true }, enabled = !estado.cargando) {
+                Icon(Icons.Default.Settings, null)
+                Spacer(Modifier.width(8.dp))
+                Text("Configurar conexión")
+            }
+
             // 5. Nota al pie informativa
             Text(
-                text = "Las cuentas de este proyecto se guardan solo en este dispositivo.",
+                text = if (usaServidor) "Cuenta del servidor: necesitas conexión para registrarte e iniciar sesión." else "Modo de práctica: las cuentas se guardan en este dispositivo.",
                 fontSize = 12.sp,
                 color = Color(0xFF49454F),
                 lineHeight = 16.sp

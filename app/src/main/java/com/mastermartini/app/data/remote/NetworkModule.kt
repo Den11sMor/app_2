@@ -14,18 +14,28 @@ class NetworkModule(context: Context) {
     val url: String
         get() = preferencias.getString("url", "http://127.0.0.1:8080/")!!
 
-    val clave: String
-        get() = preferencias.getString("clave", "")!!
+    val usuariosRemotos: Boolean
+        get() = preferencias.getBoolean("usuarios_remotos", true)
 
-    fun guardar(url: String, clave: String) {
-        val validada = ValidacionesContenido.servidor(url)
-        require(clave.all { it.code in 32..126 }) {
-            "La clave debe contener solo caracteres ASCII imprimibles"
-        }
-        preferencias.edit().putString("url", validada).putString("clave", clave.trim()).apply()
+    fun guardarToken(token: String) {
+        preferencias.edit().putString("token", token).apply()
     }
 
-    private fun retrofit(base: String, apiKey: String = ""): Retrofit {
+    fun cerrarSesion() {
+        preferencias.edit().remove("token").apply()
+    }
+
+    fun guardar(url: String, usuariosRemotos: Boolean = this.usuariosRemotos) {
+        val validada = ValidacionesContenido.servidor(url)
+        if (validada != this.url || usuariosRemotos != this.usuariosRemotos) cerrarSesion()
+        preferencias
+            .edit()
+            .putString("url", validada)
+            .putBoolean("usuarios_remotos", usuariosRemotos)
+            .apply()
+    }
+
+    private fun retrofit(base: String, autenticar: Boolean = false): Retrofit {
         val cliente =
             OkHttpClient.Builder()
                 .connectTimeout(15, TimeUnit.SECONDS)
@@ -34,7 +44,16 @@ class NetworkModule(context: Context) {
                 .followSslRedirects(false)
                 .addInterceptor { chain ->
                     val solicitud = chain.request().newBuilder()
-                    if (apiKey.isNotBlank()) solicitud.header("X-API-Key", apiKey)
+                    // Solo el backend propio recibe el JWT. Registro y login deben funcionar sin
+                    // token previo.
+                    val ruta = chain.request().url.encodedPath
+                    val publica =
+                        ruta.endsWith("/api/usuarios/login") ||
+                            ruta.endsWith("/api/usuarios/registro")
+                    if (autenticar && !publica) {
+                        val token = preferencias.getString("token", "").orEmpty()
+                        if (token.isNotBlank()) solicitud.header("Authorization", "Bearer $token")
+                    }
                     chain.proceed(solicitud.build())
                 }
                 .build()
@@ -45,8 +64,11 @@ class NetworkModule(context: Context) {
             .build()
     }
 
+    // La URL y la sesión JWT son las mismas para usuarios, cursos, recetas y videos. No hay otro
+    // cliente
+    // fijo para el emulador.
     fun repositorio(tipo: String): CatalogoRemoto {
-        val servidor = retrofit(url, clave)
+        val servidor = retrofit(url, true)
         return when (tipo) {
             "Curso" -> CursoRepository(servidor.create(CursoApi::class.java))
             "Video" -> VideoRepository(servidor.create(VideoApi::class.java))
@@ -54,6 +76,14 @@ class NetworkModule(context: Context) {
         }
     }
 
+    fun usuarios() =
+        UsuarioRemotoRepository(
+            retrofit(url, true)
+                .create(com.mastermartini.app.data.remote.api.UsuarioApi::class.java),
+            ::guardarToken,
+        )
+
+    // TheMealDB usa otro host y nunca recibe el token de sesión del backend del equipo.
     fun recetasExternas() =
         RecetaExternaRepository(
             retrofit("https://www.themealdb.com/api/json/v1/1/")

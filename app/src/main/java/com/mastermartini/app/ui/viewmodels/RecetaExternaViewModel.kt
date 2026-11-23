@@ -51,6 +51,7 @@ class RecetaExternaViewModel(private val repository: RecetasExternas) : ViewMode
         _estado.update { it.copy(detalle = null, cargando = false) }
     }
 
+    // Cancela la búsqueda anterior para que una respuesta atrasada no reemplace la búsqueda actual.
     private fun cargar(accion: suspend () -> Unit) {
         val actual = ++generacion
         trabajo?.cancel()
