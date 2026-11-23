@@ -16,7 +16,7 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
     protected val app = application as MasterMartiniApplication
 }
 
-class RecetasViewModel(application: Application) : ContenidoViewModel(application)
+
 data class RegistroUiState(
     val nombre: String = "", val correo: String = "", val telefono: String = "",
     val clave: String = "", val repetida: String = "",
@@ -68,5 +68,3 @@ class RegistroViewModel(application: Application) : BaseViewModel(application) {
         }
     }
 }
-
-class VideosViewModel(application: Application) : ContenidoViewModel(application)

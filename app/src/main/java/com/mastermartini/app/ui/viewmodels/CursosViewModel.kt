@@ -1,5 +1,5 @@
 package com.mastermartini.app.ui.viewmodels
 
-import android.app.Application
+import com.mastermartini.app.data.repository.CatalogoRemoto
 
-class CursosViewModel(application: Application) : ContenidoViewModel(application)
+class CursosViewModel(repository: CatalogoRemoto) : ModuloViewModel(repository, "Curso")

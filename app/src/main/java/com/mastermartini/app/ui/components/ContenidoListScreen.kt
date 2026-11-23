@@ -34,7 +34,9 @@ fun ContenidoListScreen(
     vm: ContenidoViewModel,
     onNavigateToRecetas: (() -> Unit)? = null,
     onNavigateToVideos: (() -> Unit)? = null,
-    onNavigateToCursos: (() -> Unit)? = null
+    onNavigateToCursos: (() -> Unit)? = null,
+    administrar: (() -> Unit)? = null,
+    explorar: (() -> Unit)? = null
 ) {
     val estado by vm.estado.collectAsStateWithLifecycle()
     val busqueda by vm.consulta.collectAsStateWithLifecycle()
@@ -77,6 +79,11 @@ fun ContenidoListScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            if (administrar != null) item {
+                Text("Catálogo de práctica guardado en el dispositivo", style = MaterialTheme.typography.labelMedium)
+                OutlinedButton(onClick = administrar, modifier = Modifier.fillMaxWidth()) { Text("Gestionar contenidos del servidor") }
+                if (explorar != null) TextButton(onClick = explorar) { Text("Explorar recetas reales · TheMealDB") }
+            }
             // Campo de búsqueda con ícono de lupa y esquinas suaves
             item {
                 AppTextField(

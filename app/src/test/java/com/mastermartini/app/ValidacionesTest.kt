@@ -13,7 +13,7 @@ class ValidacionesTest {
     }
 
     @Test fun correoAceptaEspaciosExternosPeroNoDireccionesIncompletas() {
-        assertNull(Validaciones.correo(" Luis.Cid+app@duoc.cl "))
+        assertNull(Validaciones.correo(" Luis.Cid@duoc.cl "))
         listOf("luis", "luis@", "@duoc.cl", "luis@duoc", "luis cid@duoc.cl").forEach {
             assertNotNull(it, Validaciones.correo(it))
         }

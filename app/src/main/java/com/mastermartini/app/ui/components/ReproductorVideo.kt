@@ -30,19 +30,19 @@ import kotlinx.coroutines.delay
 
 // Videos locales con controles propios. No necesitan conexión ni permisos de red.
 @Composable
-fun ReproductorVideo(videoResId: Int) {
+fun ReproductorVideo(videoResId: Int = 0, videoUrl: String? = null) {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val uri = remember(videoResId) {
-        Uri.parse("android.resource://${context.packageName}/$videoResId")
+    val uri = remember(videoResId, videoUrl) {
+        if (videoUrl != null) Uri.parse(videoUrl) else Uri.parse("android.resource://${context.packageName}/$videoResId")
     }
-    var posicion by rememberSaveable(videoResId) { mutableIntStateOf(0) }
-    var reproducirAlPreparar by rememberSaveable(videoResId) { mutableStateOf(false) }
-    var pantallaCompleta by rememberSaveable(videoResId) { mutableStateOf(false) }
-    var duracion by remember(videoResId) { mutableIntStateOf(0) }
-    var reproduciendo by remember(videoResId) { mutableStateOf(false) }
-    var cargando by remember(videoResId) { mutableStateOf(true) }
-    var error by remember(videoResId) { mutableStateOf(false) }
+    var posicion by rememberSaveable(videoResId, videoUrl) { mutableIntStateOf(0) }
+    var reproducirAlPreparar by rememberSaveable(videoResId, videoUrl) { mutableStateOf(false) }
+    var pantallaCompleta by rememberSaveable(videoResId, videoUrl) { mutableStateOf(false) }
+    var duracion by remember(videoResId, videoUrl) { mutableIntStateOf(0) }
+    var reproduciendo by remember(videoResId, videoUrl) { mutableStateOf(false) }
+    var cargando by remember(videoResId, videoUrl) { mutableStateOf(true) }
+    var error by remember(videoResId, videoUrl) { mutableStateOf(false) }
     var arrastrando by remember { mutableStateOf(false) }
     var vista by remember { mutableStateOf<VideoView?>(null) }
 
