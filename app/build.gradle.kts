@@ -69,6 +69,15 @@ dependencies {
     // Navegación entre pantallas en Compose.
     implementation(libs.androidx.navigation.compose)
 
+    // Retrofit: conexión con el backend
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+
+    // Conversión de JSON a objetos Kotlin
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    // Registro de solicitudes HTTP para depuración
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
     // Base de datos local Room y su compilador KSP.
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
