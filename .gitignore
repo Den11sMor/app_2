@@ -15,3 +15,12 @@
 local.properties
 
 /work/
+
+# Salidas y credenciales privadas de backend y firma.
+**/target/
+*.jks
+*.keystore
+signing.properties
+.env
+.env.*
+!.env.example
