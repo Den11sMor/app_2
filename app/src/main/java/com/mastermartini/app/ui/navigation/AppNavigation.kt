@@ -3,6 +3,10 @@ package com.mastermartini.app.ui.navigation
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Scaffold
+import androidx.compose.ui.Modifier
+import com.mastermartini.app.ui.components.BarraInferior
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
@@ -37,6 +41,15 @@ object Routes {
 fun AppNavigation(vm: HomeViewModel = viewModel()) {
     val nav = rememberNavController()
     val inicio = remember { if (vm.idInicial == 0L) Routes.LOGIN else Routes.HOME }
+    val entrada by nav.currentBackStackEntryAsState()
+    val ruta = entrada?.destination?.route ?: inicio
+    val mostrarBarra = ruta !in setOf(Routes.LOGIN, Routes.REGISTRO, Routes.INTERESES)
+    val seccion = when {
+        ruta == Routes.PERFIL || ruta == Routes.EDITAR_INTERESES -> Routes.PERFIL
+        ruta == Routes.FAVORITOS -> Routes.FAVORITOS
+        ruta == Routes.DETALLE && nav.previousBackStackEntry?.destination?.route == Routes.FAVORITOS -> Routes.FAVORITOS
+        else -> Routes.HOME
+    }
     val volver: () -> Unit = { nav.popBackStack(); Unit }
     val abrir: (Int) -> Unit = { id -> nav.navigate("detalle/$id") }
     fun irAlInicio() {
@@ -45,7 +58,19 @@ fun AppNavigation(vm: HomeViewModel = viewModel()) {
             launchSingleTop = true
         }
     }
+    fun abrirSeccion(destino: String) {
+        if (nav.currentDestination?.route != destino) nav.navigate(destino) {
+            // Vuelve a las secciones principales sin acumular copias en el historial.
+            popUpTo(Routes.HOME)
+            launchSingleTop = true
+        }
+    }
+    Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        bottomBar = { if (mostrarBarra) BarraInferior(seccion, ::abrirSeccion) },
+    ) { padding ->
     NavHost(
+        modifier = Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding),
         navController = nav, startDestination = inicio,
         enterTransition = { fadeIn(tween(200)) + slideInHorizontally(tween(200)) { it / 12 } },
         exitTransition = { fadeOut(tween(150)) },
@@ -67,8 +92,7 @@ fun AppNavigation(vm: HomeViewModel = viewModel()) {
         composable(Routes.HOME) {
             HomeScreen(
                 { nav.navigate(Routes.RECETAS) }, { nav.navigate(Routes.VIDEOS) },
-                { nav.navigate(Routes.CURSOS) }, { nav.navigate(Routes.FAVORITOS) },
-                { nav.navigate(Routes.PERFIL) }
+                { nav.navigate(Routes.CURSOS) }, { abrirSeccion(Routes.PERFIL) }
             )
         }
         composable(Routes.RECETAS) { RecetasScreen(volver, abrir) }
@@ -95,5 +119,6 @@ fun AppNavigation(vm: HomeViewModel = viewModel()) {
                 }
             })
         }
+    }
     }
 }

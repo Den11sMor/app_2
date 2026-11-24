@@ -19,7 +19,10 @@ class FlujoAppTest {
     }
 
     private fun pulsar(texto: String) {
-        compose.onNode(hasClickAction() and hasText(texto)).performScrollTo().performClick()
+        val nodo = compose.onNode(hasClickAction() and hasText(texto))
+        // La barra inferior ya está visible y no pertenece a una lista desplazable.
+        if (!nodo.isDisplayed()) nodo.performScrollTo()
+        nodo.performClick()
     }
 
     private fun esperar(texto: String) {

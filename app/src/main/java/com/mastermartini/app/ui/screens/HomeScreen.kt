@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -52,7 +51,6 @@ fun HomeScreen(
     onNavigateToRecetas: () -> Unit,
     onNavigateToVideos: () -> Unit,
     onNavigateToCursos: () -> Unit,
-    onNavigateToFavoritos: () -> Unit,
     onNavigateToPerfil: () -> Unit,
     vm: HomeViewModel = viewModel()
 ) {
@@ -91,49 +89,8 @@ fun HomeScreen(
         }
     }
 
-    Scaffold(
-        // Barra inferior de navegación flotante/redondeada con 3 pestañas
-        bottomBar = {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
-                    .clip(RoundedCornerShape(32.dp)),
-                color = Color(0xFFFAF7FC),
-                tonalElevation = 8.dp,
-                shadowElevation = 4.dp
-            ) {
-                NavigationBar(
-                    containerColor = Color.Transparent,
-                    tonalElevation = 0.dp
-                ) {
-                    // Pestaña Inicio (Seleccionada)
-                    NavigationBarItem(
-                        selected = true,
-                        onClick = { },
-                        icon = { Icon(Icons.Filled.Home, contentDescription = "Inicio", tint = Color(0xFF6750A4)) },
-                        label = { Text("Inicio", color = Color(0xFF6750A4), fontWeight = FontWeight.Bold) }
-                    )
-
-                    // Pestaña Mis Favoritos
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = onNavigateToFavoritos,
-                        icon = { Icon(Icons.Outlined.FavoriteBorder, contentDescription = "Mis favoritos", tint = Color(0xFF49454F)) },
-                        label = { Text("Mis favoritos", color = Color(0xFF49454F)) }
-                    )
-
-                    // Pestaña Mi Perfil
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = onNavigateToPerfil,
-                        icon = { Icon(Icons.Outlined.Person, contentDescription = "Mi perfil", tint = Color(0xFF49454F)) },
-                        label = { Text("Mi perfil", color = Color(0xFF49454F)) }
-                    )
-                }
-            }
-        }
-    ) { padding ->
+    // La barra inferior se comparte desde AppNavigation.
+    Scaffold { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

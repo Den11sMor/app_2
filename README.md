@@ -28,11 +28,15 @@ Si las carpetas tienen otros nombres, pasar `-BackendPath 'C:/ruta/backend_app'`
 
 ## Probar Android
 
-1. Abrir el proyecto en Android Studio o instalar el APK firmado **Master Martini API**, versión 2.0.
+1. Abrir el proyecto en Android Studio o instalar el APK firmado **Master Martini API**, versión 2.1.
 2. Con el backend activo, registrar una cuenta. El registro remoto inicia sesión automáticamente y obtiene un JWT.
 3. Abrir Recetas, Videos o Cursos → **Gestionar contenidos del servidor**. Crear, consultar, editar, actualizar el listado y eliminar con confirmación.
 4. Recetas → **Explorar recetas reales · TheMealDB** → buscar `cake`, `chocolate` o `pasta` y abrir una preparación.
 5. El catálogo local original sigue disponible para practicar. Desde el login, **Configurar conexión** permite elegir cuentas locales en vez de cuentas del servidor.
+
+La versión 2.1 comparte la barra Inicio / Mis favoritos / Mi perfil en todas las pantallas de la sesión, incluidos detalles y formularios. No se muestra antes de iniciar sesión ni durante la selección inicial de intereses. La validación de correo acepta guion bajo, guion y +, manteniendo los controles de formato.
+
+Se incorporaron también los ocho archivos de pruebas añadidos por el compañero en `main` (commit `3a5fedb`), conservando su contenido y usando MockK junto a las pruebas de integración existentes.
 
 Para un Android autorizado conectado por USB, activar Depuración USB, aceptar la conexión y ejecutar `./tools/Conectar-Android.ps1`. La URL local es `http://127.0.0.1:8080/`; el script establece `adb reverse`. En emulador usar `http://10.0.2.2:8080/` desde Configurar conexión. Mantener servidor y cable activos durante la demostración.
 
@@ -67,7 +71,7 @@ Las cuentas locales de práctica usan PBKDF2 con sal. Perfil, foto, intereses se
 
 `liveApi` consulta TheMealDB real y `liveBackend` prueba registro/login y CRUD mediante Retrofit contra Spring Boot/MySQL local. Sin esos parámetros, esas pruebas de red se omiten para que la suite cotidiana no dependa de servicios activos.
 
-El backend verifica **80 % de cobertura global de líneas** con JaCoCo. Android mide toda la lógica móvil con `:app:coberturaLogica`: 84,26 % de líneas (685/813), incluyendo ViewModels, repositorios, utilidades, modelos con comportamiento y configuración de red. Se excluyen las vistas Compose y el código generado. El informe acotado de módulos remotos se conserva por separado. Resultados y alcance: [PRUEBAS_ENTREGA.md](docs/PRUEBAS_ENTREGA.md).
+El backend verifica **80 % de cobertura global de líneas** con JaCoCo. Android mide toda la lógica móvil con `:app:coberturaLogica`: 87,16 % de líneas (713/818), incluyendo ViewModels, repositorios, utilidades, modelos con comportamiento y configuración de red. Se excluyen las vistas Compose y el código generado. El informe acotado de módulos remotos se conserva por separado. Resultados y alcance: [PRUEBAS_ENTREGA.md](docs/PRUEBAS_ENTREGA.md).
 
 La firma Release se toma de `signing.properties`, excluido de Git; usar `signing.properties.example` como plantilla. No publicar JKS ni contraseñas. El APK queda en `app/build/outputs/apk/release/app-release.apk`.
 
@@ -81,3 +85,5 @@ La firma Release se toma de `signing.properties`, excluido de Git; usar `signing
 - [Tareas para el tablero](docs/TAREAS_LUIS.csv).
 
 Falta aprovisionar alojamiento HTTPS y MySQL remota: la configuración está preparada, pero GitHub no ejecuta el backend por sí solo. No se creó un tablero Trello sin acceso; el CSV registra las tareas preparadas. Las pruebas manuales de pantalla, cámara y reproducción requieren un Android autorizado; no se instaló nada en el teléfono del trabajo presentado por el usuario.
+
+- [Mejoras y resultados de la versión 2.1](docs/MEJORAS_2_1.md).

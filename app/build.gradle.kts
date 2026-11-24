@@ -25,8 +25,8 @@ android {
         minSdk = 24
         targetSdk = 37
 
-        versionCode = 3
-        versionName = "2.0"
+        versionCode = 4
+        versionName = "2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -141,6 +141,8 @@ dependencies {
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     testImplementation("org.mockito:mockito-core:5.20.0")
+    // Las pruebas del compañero en main usan MockK.
+    testImplementation("io.mockk:mockk:1.13.12")
 
     // Pruebas unitarias e instrumentadas.
     testImplementation(libs.junit)

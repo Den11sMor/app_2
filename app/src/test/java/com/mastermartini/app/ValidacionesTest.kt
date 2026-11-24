@@ -27,6 +27,16 @@ class ValidacionesTest {
         }
     }
 
+    @Test fun correoAceptaGuionBajoMasYDominiosConNumeros() {
+        listOf("nombre_apellido@example.com", "alumno-apellido@correo2.cl", "alumno+recetas@sub.correo.cl").forEach {
+            assertNull(it, Validaciones.correo(it))
+        }
+        listOf(".luis@correo.cl", "luis.@correo.cl", "luis..cid@correo.cl", "luis@-correo.cl",
+            "luis@correo-.cl", "luis@correo..cl", "luis@@correo.cl", "luis@correo_cl.com").forEach {
+            assertNotNull(it, Validaciones.correo(it))
+        }
+    }
+
     @Test fun claveExigeLongitudLetrasNumerosYConfirmacion() {
         assertNull(Validaciones.clave("Martini2026"))
         listOf("abc123", "abcdefgh", "12345678", "A1".repeat(65)).forEach {
