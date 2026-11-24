@@ -11,6 +11,10 @@ interface UsuarioDao {
     suspend fun buscarPorCorreo(correo: String): UsuarioEntity?
     @Query("SELECT * FROM usuarios WHERE id = :id")
     fun observar(id: Long): Flow<UsuarioEntity?>
+    // Actualiza la caché de credenciales después de un login confirmado por el servidor.
+    @Query("UPDATE usuarios SET claveHash = :hash, sal = :sal WHERE id = :id")
+    suspend fun actualizarCredenciales(id: Long, hash: String, sal: String)
+
     @Query("UPDATE usuarios SET nombre = :nombre, telefono = :telefono WHERE id = :id")
     suspend fun actualizarPerfil(id: Long, nombre: String, telefono: String)
     @Query("UPDATE usuarios SET intereses = :intereses WHERE id = :id")

@@ -11,9 +11,8 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-}
+// Java se configura en Android Studio o JAVA_HOME y en el workflow de GitHub.
+// No necesitamos descargar otra JVM mediante un resolver de toolchains.
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {

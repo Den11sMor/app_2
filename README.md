@@ -1,76 +1,89 @@
-# Master Martini — aplicación Android
+# Master Martini — Android
 
-Proyecto académico en Kotlin y Jetpack Compose. Conserva el catálogo y la estructura inicial del equipo: recetas, videos, cursos, favoritos y perfil.
+Aplicación académica Kotlin/Compose con cursos, recetas, videos, perfil y favoritos. Los tres módulos de contenidos tienen formularios CRUD conectados con Retrofit al backend Spring Boot del equipo. TheMealDB aporta recetas reales de una API externa.
 
-## Ejecutar
+## Repositorios del equipo
 
-1. Abrir esta carpeta en Android Studio y sincronizar Gradle.
-2. Usar JDK 17 para Gradle e instalar Android SDK 37.
-3. Ejecutar la variante `debug` en un emulador o teléfono con Android 7.0 o superior.
-4. Crear una cuenta local, elegir intereses y explorar el catálogo.
+- Android: https://github.com/Den11sMor/app_2 — rama individual `Luis-modulos-remotos`.
+- Backend: https://github.com/Den11sMor/backend_app — integración individual `Luis-modulos-contenidos`.
 
-No se necesita una API, claves ni un servidor. La aplicación de depuración usa el identificador `com.mastermartini.app`.
+El backend provisional que se preparó antes de recibir el repositorio del compañero se integró en `backend_app`. Se mantiene **un solo servidor, una configuración de base y una configuración de red Android**. Los commits anteriores se conservan en el historial.
 
-## Funciones
+## Ejecución local
 
-- Registro con nombre, correo, teléfono, contraseña y confirmación.
-- Errores por campo y control de correo duplicado.
-- Login con credenciales y sesión recordada entre aperturas.
-- Contraseñas derivadas con PBKDF2, sal aleatoria y comparación del hash.
-- Intereses editables desde el perfil.
-- Catálogo local de recetas, microclases en video y programas de cursos.
-- Búsqueda por título o categoría y detalles según el contenido seleccionado.
-- Favoritos persistentes separados por usuario.
-- Perfil editable, foto desde cámara o galería y cierre de sesión.
-- Temporizador de práctica de 15 minutos en las recetas.
-- Pantallas desplazables, flechas de regreso, transiciones y mensajes animados.
+Clonar ambos repositorios como carpetas hermanas `app_2` y `backend_app`. Android usa JDK 17 y SDK 37; el backend conserva Java 21 y Spring Boot 4.2 del compañero. Requiere MySQL 8.4.
 
-## Organización
-
-- `data/local`: entidades, DAO y base de datos Room.
-- `data/repository`: acceso a datos, sesión y catálogo de ejemplo.
-- `domain/model`: usuario y tipos de contenido. Receta, Video y Curso heredan de Contenido y definen su acción.
-- `ui/screens`: pantallas y ViewModels con StateFlow.
-- `ui/components`: campos, botones, tarjetas y listado compartido.
-- `ui/navigation`: rutas y navegación con el identificador del contenido.
-- `utils`: validaciones y manejo de contraseñas.
-- `MasterMartiniApplication`: comparte las instancias de los repositorios con inyección manual.
-
-La UI muestra el estado del ViewModel. Los ViewModels validan y llaman al repositorio; Room realiza las consultas fuera del hilo principal.
-
-## Recursos del dispositivo
-
-1. **Cámara:** captura una imagen mediante la app de cámara con TakePicture. Un FileProvider comparte únicamente la carpeta temporal de capturas.
-2. **Galería:** el selector de fotos de Android entrega únicamente la imagen elegida. Se copia y reduce a un archivo interno de la app.
-
-No se solicitan permisos generales de almacenamiento ni de cámara: se delegan esas acciones a las aplicaciones del sistema. Si no existe una app compatible o se cancela la selección, el perfil sigue disponible.
-
-## Pruebas
+Desde la raíz de Android:
 
 ```powershell
-.\gradlew.bat :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
-.\gradlew.bat :app:connectedDebugAndroidTest
+./tools/Preparar-MySQL-Local.ps1 -MySqlBin 'C:/laragon/bin/mysql/mysql-8.4.3-winx64/bin'
+./tools/Iniciar-Backend.ps1
+# Esperar Started en work/backend/servidor.log.
+./tools/Probar-Servidor.ps1
 ```
 
-Las pruebas unitarias cubren validaciones y hash de contraseñas. Las instrumentadas comprueban Room, favoritos por usuario, persistencia al reabrir la base y el flujo de registro, perfil y sesión. Las pruebas del dispositivo requieren un emulador o teléfono conectado.
+Si las carpetas tienen otros nombres, pasar `-BackendPath 'C:/ruta/backend_app'` a `Iniciar-Backend.ps1`. El script utiliza JDK 21 o superior; también puede usar el JBR de Android Studio si está instalado. Las credenciales y la clave JWT se generan y guardan en `work/`, excluido de Git.
 
-Consulta también [la guía de revisión](docs/REVISION.md) y [los pasos para tus commits](docs/COMMITS.md).
+`Probar-Servidor.ps1` registra una cuenta de prueba, inicia sesión, carga ejemplos y comprueba las cinco operaciones CRUD de los tres módulos. La cuenta queda en `work/pruebas/cuenta-demo.json`; no publicar ese archivo.
 
-## Alcance y pendientes de contenido
+## Probar Android
 
-- Las cuentas y los datos son locales. No se sincronizan con otros teléfonos.
-- Incluye dos microclases animadas con narración en español: Técnicas de chocolatería (1:25) y Decoración de tortas (1:18). Se reproducen sin internet con controles y pantalla completa.
-- Los cursos incluyen programas de demostración, sin inscripción ni certificación.
-- El temporizador ofrece información visual en la pantalla de detalle; no genera alarmas ni notificaciones en segundo plano.
-- El acceso a cámara y galería debe probarse en el teléfono que se usará para la presentación.
-- La colaboración se acredita con los commits y tareas reales de cada integrante.
+1. Abrir el proyecto en Android Studio o instalar el APK firmado **Master Martini API**, versión 2.1.
+2. Con el backend activo, registrar una cuenta. El registro remoto inicia sesión automáticamente y obtiene un JWT.
+3. Abrir Recetas, Videos o Cursos → **Gestionar contenidos del servidor**. Crear, consultar, editar, actualizar el listado y eliminar con confirmación.
+4. Recetas → **Explorar recetas reales · TheMealDB** → buscar `cake`, `chocolate` o `pasta` y abrir una preparación.
+5. El catálogo local original sigue disponible para practicar. Desde el login, **Configurar conexión** permite elegir cuentas locales en vez de cuentas del servidor.
 
-## Referencias técnicas
+La versión 2.1 comparte la barra Inicio / Mis favoritos / Mi perfil en todas las pantallas de la sesión, incluidos detalles y formularios. No se muestra antes de iniciar sesión ni durante la selección inicial de intereses. La validación de correo acepta guion bajo, guion y +, manteniendo los controles de formato.
 
-- [Room](https://developer.android.com/training/data-storage/room)
-- [Selector de fotos](https://developer.android.com/training/data-storage/shared/photo-picker)
-- [FileProvider](https://developer.android.com/reference/androidx/core/content/FileProvider)
+Se incorporaron también los ocho archivos de pruebas añadidos por el compañero en `main` (commit `3a5fedb`), conservando su contenido y usando MockK junto a las pruebas de integración existentes.
 
-## Videos de la versión 1.1
+Para un Android autorizado conectado por USB, activar Depuración USB, aceptar la conexión y ejecutar `./tools/Conectar-Android.ps1`. La URL local es `http://127.0.0.1:8080/`; el script establece `adb reverse`. En emulador usar `http://10.0.2.2:8080/` desde Configurar conexión. Mantener servidor y cable activos durante la demostración.
 
-Consulta [VIDEOS.md](docs/VIDEOS.md) para ver el contenido, las fuentes, la generación de los archivos y las comprobaciones pendientes en teléfono.
+La variante Release usa `com.mastermartini.app.integracion`, por lo que conserva instalada la versión anterior. Las cuentas y datos de cada instalación son independientes.
+
+## Arquitectura
+
+**Compose → ViewModel/StateFlow → Repository → Retrofit → Controller → Service → JPA → MySQL**.
+
+- `NetworkModule`: URL compartida y envío del JWT al backend propio; TheMealDB no recibe ese token.
+- `CursosViewModel`, `RecetasViewModel`, `VideosViewModel`: reutilizan `ModuloViewModel` con su repositorio.
+- `ValidacionesContenido`: reglas comunes y errores por campo antes de enviar el formulario.
+- `ModuloScreen`: catálogo, formulario, consulta, edición y confirmación de eliminación.
+- Room conserva la sesión y el catálogo/favoritos locales. Los ID locales no se sustituyen por los ID del servidor.
+- El backend usa `Contenido` como entidad base y herencia `JOINED` para Curso, Receta y Video; comparten el catálogo que utilizan sus favoritos.
+
+## Base de datos y seguridad
+
+La base local integrada es **master_martini**: `usuarios`, `intereses`, `usuario_intereses`, `contenidos`, `favoritos`, `cursos`, `recetas` y `videos`. El SQL sin datos está en `database/estructura-master-martini.sql` del repositorio backend.
+
+Las contraseñas remotas se guardan con BCrypt. El login entrega un JWT que protege las operaciones del servidor. Android no imprime cuerpos de autenticación ni recibe contraseñas de MySQL. El teléfono se comunica por HTTP con Spring Boot, nunca por SQL directo. HTTPS se exige para hosts remotos; HTTP se limita a loopback y emulador.
+
+Las cuentas locales de práctica usan PBKDF2 con sal. Perfil, foto, intereses seleccionados y favoritos de ese catálogo conservan la persistencia Room del proyecto original. El backend tiene sus propios endpoints de intereses/favoritos, probados por separado; la UI anterior no se presenta como sincronizada remotamente.
+
+## Pruebas y firma
+
+```powershell
+./gradlew.bat :app:assembleRelease :app:coberturaModulos :app:lintDebug -PliveApi=true -PliveBackend=true
+# En backend_app con JDK 21 o superior:
+./mvnw.cmd verify
+```
+
+`liveApi` consulta TheMealDB real y `liveBackend` prueba registro/login y CRUD mediante Retrofit contra Spring Boot/MySQL local. Sin esos parámetros, esas pruebas de red se omiten para que la suite cotidiana no dependa de servicios activos.
+
+El backend verifica **80 % de cobertura global de líneas** con JaCoCo. Android mide toda la lógica móvil con `:app:coberturaLogica`: 87,16 % de líneas (713/818), incluyendo ViewModels, repositorios, utilidades, modelos con comportamiento y configuración de red. Se excluyen las vistas Compose y el código generado. El informe acotado de módulos remotos se conserva por separado. Resultados y alcance: [PRUEBAS_ENTREGA.md](docs/PRUEBAS_ENTREGA.md).
+
+La firma Release se toma de `signing.properties`, excluido de Git; usar `signing.properties.example` como plantilla. No publicar JKS ni contraseñas. El APK queda en `app/build/outputs/apk/release/app-release.apk`.
+
+## Documentación y pendientes
+
+- [Endpoints de contenidos](docs/API_CONTENIDOS.md).
+- [API externa](docs/API_EXTERNA.md).
+- [Conexión y entrega](docs/CONEXION_Y_ENTREGA.md).
+- [Guía para la defensa](docs/GUIA_LUIS.md).
+- [Integración del equipo](docs/REVISION_COMPANERO.md).
+- [Tareas para el tablero](docs/TAREAS_LUIS.csv).
+
+Falta aprovisionar alojamiento HTTPS y MySQL remota: la configuración está preparada, pero GitHub no ejecuta el backend por sí solo. No se creó un tablero Trello sin acceso; el CSV registra las tareas preparadas. Las pruebas manuales de pantalla, cámara y reproducción requieren un Android autorizado; no se instaló nada en el teléfono del trabajo presentado por el usuario.
+
+- [Mejoras y resultados de la versión 2.1](docs/MEJORAS_2_1.md).

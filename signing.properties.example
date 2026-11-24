@@ -1,0 +1,5 @@
+# Copiar a signing.properties (ignorado por Git) y completar solo en el equipo del responsable.
+storeFile=C:/ruta/privada/mastermartini-release.jks
+storePassword=CAMBIAR_LOCALMENTE
+keyAlias=mastermartini
+keyPassword=CAMBIAR_LOCALMENTE

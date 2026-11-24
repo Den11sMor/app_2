@@ -1,8 +1,5 @@
 package com.mastermartini.app.ui.screens
 
-import android.net.Uri
-import android.widget.MediaController
-import android.widget.VideoView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -28,7 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mastermartini.app.ui.components.*
@@ -98,11 +94,11 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
 
             contenido?.let { item ->
                 val imagenRes = item.obtenerImagenResId(context)
-                val videoRes = item.obtenerVideoResId(context)
+                val videoRes = item.obtenerVideoResId()
 
                 // 1. Reproductor de Video (Si es un contenido de tipo Video y existe el archivo en res/raw/)
                 if (item.tipo == "Video" && videoRes != null) {
-                    ReproductorVideoView(videoRes)
+                    ReproductorVideo(videoRes)
                 } else {
                     // Ilustración / Foto de Portada con bordes suavemente curvados
                     Box(
@@ -219,7 +215,7 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                                     }
                                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                                         Icon(Icons.Default.WorkspacePremium, null, tint = Color(0xFF6750A4), modifier = Modifier.size(18.dp))
-                                        Text("Certificado incluido", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color(0xFF1D1B20))
+                                        Text("Guía de práctica", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color(0xFF1D1B20))
                                     }
                                 }
                             }
@@ -291,7 +287,7 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                                                 color = Color(0xFF1D1B20)
                                             )
                                             Text(
-                                                text = "Lección teórico-práctica con evaluación guiada",
+                                                text = "Unidad del programa de estudio",
                                                 fontSize = 12.sp,
                                                 color = Color(0xFF49454F)
                                             )
@@ -299,7 +295,7 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
 
                                         Icon(
                                             imageVector = Icons.Default.PlayCircle,
-                                            contentDescription = "Iniciar unidad",
+                                            contentDescription = null,
                                             tint = Color(0xFF6750A4),
                                             modifier = Modifier.size(24.dp)
                                         )
@@ -322,10 +318,10 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                                 Icon(Icons.Default.Star, null, tint = Color(0xFF6750A4))
-                                Text("Proyecto y Certificado", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1D1B20))
+                                Text("Proyecto de práctica", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1D1B20))
                             }
                             Text(
-                                text = "Al completar las unidades de este curso, podrás descargar tu Certificado de Participación Master Martini y registrar tu proyecto en tu perfil.",
+                                text = "Revisa el programa y realiza la actividad sugerida. Este catálogo educativo no incluye inscripción, evaluación ni certificación.",
                                 fontSize = 14.sp,
                                 color = Color(0xFF49454F),
                                 lineHeight = 19.sp
@@ -564,36 +560,5 @@ fun DetalleContenidoScreen(id: Int, volver: () -> Unit, vm: DetalleViewModel = v
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
-    }
-}
-
-// Componente de reproductor de video nativo con controles para Compose
-@Composable
-private fun ReproductorVideoView(videoResId: Int) {
-    val context = LocalContext.current
-    val videoUri = remember(videoResId) {
-        Uri.parse("android.resource://${context.packageName}/$videoResId")
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(230.dp),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Black),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        AndroidView(
-            factory = { ctx ->
-                VideoView(ctx).apply {
-                    setVideoURI(videoUri)
-                    val mediaController = MediaController(ctx)
-                    mediaController.setAnchorView(this)
-                    setMediaController(mediaController)
-                    start()
-                }
-            },
-            modifier = Modifier.fillMaxSize()
-        )
     }
 }

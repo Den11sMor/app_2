@@ -18,14 +18,19 @@ object Validaciones {
         }
     }
 
-    // Valida que el correo solo contenga letras, números y punto (.) antes del @, y solo letras con punto (.) después del @.
+    // Acepta direcciones habituales con guion bajo, guion y +; rechaza espacios y partes vacías.
     fun correo(valor: String): String? {
         val texto = valor.trim()
-        val regexCorreoStrict = Regex("^[a-zA-Z0-9.]+@[a-zA-Z]+(\\.[a-zA-Z]+)+$")
+        val formato = Regex("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
+        val nombre = texto.substringBefore('@')
+        val dominio = texto.substringAfter('@', "").split('.')
+        val partesValidas = nombre.length <= 64 && !nombre.startsWith('.') &&
+            !nombre.endsWith('.') && !nombre.contains("..") &&
+            dominio.all { it.isNotEmpty() && it.length <= 63 && !it.startsWith('-') && !it.endsWith('-') }
 
         return when {
             texto.isBlank() -> "Ingresa tu correo electrónico"
-            !regexCorreoStrict.matches(texto) -> "Correo no válido (solo letras, números y punto; sin símbolos como _ % + -)"
+            texto.length > 254 || !formato.matches(texto) || !partesValidas -> "Ingresa un correo válido, por ejemplo nombre_apellido@correo.com"
             else -> null
         }
     }

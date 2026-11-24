@@ -1,5 +1,6 @@
 *.iml
 .gradle
+.kotlin/
 /local.properties
 /.idea/caches
 /.idea/libraries
@@ -15,3 +16,13 @@
 local.properties
 
 /work/
+
+# Salidas y credenciales privadas de backend y firma.
+**/target/
+*.jks
+*.keystore
+signing.properties
+/private-signing/
+.env
+.env.*
+!.env.example

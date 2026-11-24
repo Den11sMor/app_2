@@ -2,6 +2,7 @@ package com.mastermartini.app
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -18,23 +19,33 @@ class FlujoAppTest {
     }
 
     private fun pulsar(texto: String) {
-        compose.onNode(hasClickAction() and hasText(texto)).performScrollTo().performClick()
+        val nodo = compose.onNode(hasClickAction() and hasText(texto))
+        // La barra inferior ya está visible y no pertenece a una lista desplazable.
+        if (!nodo.isDisplayed()) nodo.performScrollTo()
+        nodo.performClick()
     }
 
     private fun esperar(texto: String) {
-        compose.waitUntil(15000) { compose.onAllNodesWithText(texto).fetchSemanticsNodes().isNotEmpty() }
+        val normalizar: (String) -> String = { it.replace(Regex("\\s+"), " ").trim() }
+        val coincide = SemanticsMatcher("Texto: $texto") { nodo ->
+            val textos = if (nodo.config.contains(SemanticsProperties.Text)) nodo.config[SemanticsProperties.Text] else emptyList()
+            textos.any { normalizar(it.text) == normalizar(texto) }
+        }
+        compose.waitUntil(15000) { compose.onAllNodes(coincide).fetchSemanticsNodes().isNotEmpty() }
     }
 
     @Test fun registroFavoritosPerfilYSesionFuncionan() {
         val app = ApplicationProvider.getApplicationContext<MasterMartiniApplication>()
+        // Esta prueba verifica el flujo local; las pruebas HTTP/JWT usan su propia suite.
+        app.red.guardar(app.red.url, usuariosRemotos = false)
         app.usuarios.cerrarSesion()
         ActivityScenario.launch(MainActivity::class.java).use { activity ->
             pulsar("Crear una cuenta")
             pulsar("Crear cuenta")
-            compose.onNodeWithText("Ingresa al menos 3 caracteres").assertExists()
+            compose.onNodeWithText("Ingresa tu nombre y apellido").assertExists()
 
             val correo = "prueba${System.currentTimeMillis()}@test.cl"
-            campo("Nombre", "Estudiante")
+            campo("Nombre", "Estudiante Prueba")
             campo("Correo electrónico", correo)
             campo("Teléfono", "912345678")
             campo("Contraseña", "Martini2026")
@@ -45,7 +56,7 @@ class FlujoAppTest {
             compose.onNodeWithText("Selecciona al menos un interés").assertExists()
             pulsar("Recetas")
             pulsar("Guardar y continuar")
-            esperar("Bienvenido, Estudiante")
+            esperar("Bienvenido, Estudiante Prueba")
 
             pulsar("Recetas")
             campo("Buscar por nombre o categoría", "Brownie")
