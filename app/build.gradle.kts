@@ -3,6 +3,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp) // Plugin KSP necesario para generar código de Room
+    jacoco
+}
+
+configure<JacocoPluginExtension> {
+    toolVersion = "0.8.11"
 }
 
 // Configuración general del proyecto Android.
@@ -46,6 +51,44 @@ android {
     }
 }
 
+// Configuración de la tarea report de JaCoCo para cobertura de código
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn("testDebugUnitTest")
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/jacocoTestReport/html"))
+    }
+
+    val fileFilter = listOf(
+        "**/R.class",
+        "**/R$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        "android/**/*.*",
+        "**/ui/theme/**",
+        "**/ui/screens/**",
+        "**/ui/components/**",
+        "**/data/local/entity/**",
+        "**/data/local/dao/**",
+        "**/data/local/database/**"
+    )
+
+    val debugTree = fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") {
+        exclude(fileFilter)
+    }
+
+    val mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories.setFrom(files(mainSrc))
+    classDirectories.setFrom(files(debugTree))
+    executionData.setFrom(fileTree(layout.buildDirectory) {
+        include("**/testDebugUnitTest.exec", "**/jacoco/testDebugUnitTest.exec")
+    })
+}
+
 // Dependencias y librerías del módulo.
 dependencies {
 
@@ -85,6 +128,9 @@ dependencies {
 
     // Pruebas unitarias e instrumentadas.
     testImplementation(libs.junit)
+    testImplementation("io.mockk:mockk:1.13.12")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
